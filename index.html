@@ -300,6 +300,38 @@ textarea.input { resize:vertical; min-height:70px; }
 .vocab-short-text { font-size:13px; color:var(--text-light); line-height:1.7; }
 .vocab-short-words { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
 
+/* 食材找食谱 */
+.recipe-ingredient-box { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  border:1px solid var(--border); box-shadow:var(--shadow); }
+.recipe-ingredient-input-row { display:flex; gap:8px; margin-bottom:10px; }
+.recipe-ingredient-input-row .input { flex:1; }
+.recipe-selected-ingredients { display:flex; flex-wrap:wrap; gap:6px; min-height:32px; margin-top:8px; }
+.recipe-ing-tag { display:inline-flex; align-items:center; gap:4px; padding:5px 10px; background:var(--green-light);
+  color:var(--green-dark); border-radius:14px; font-size:12px; font-weight:500; }
+.recipe-ing-tag .remove { cursor:pointer; opacity:.6; font-size:14px; }
+.recipe-ing-tag .remove:active { opacity:1; color:var(--danger); }
+.recipe-common-ingredients { margin-top:10px; }
+.recipe-common-label { font-size:11px; color:var(--text-light); margin-bottom:6px; }
+.recipe-common-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.recipe-common-tag { padding:5px 12px; background:#fff; border:1.5px solid var(--border); border-radius:14px;
+  font-size:12px; cursor:pointer; transition:all .15s; }
+.recipe-common-tag:active { background:var(--green-light); border-color:var(--green); }
+.recipe-result-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  border:1px solid var(--border); box-shadow:var(--shadow); }
+.recipe-result-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.recipe-result-name { font-size:16px; font-weight:600; flex:1; }
+.recipe-match-badge { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; white-space:nowrap; flex-shrink:0; }
+.recipe-match-full { background:var(--green); color:#fff; }
+.recipe-match-partial { background:#fef5e7; color:#b8813a; }
+.recipe-match-low { background:#ffebeb; color:#c94a4a; }
+.recipe-result-desc { font-size:13px; color:var(--text-light); line-height:1.6; margin-bottom:8px; }
+.recipe-ingredients-row { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; align-items:center; }
+.recipe-ing-have { background:var(--green-light); color:var(--green-dark); }
+.recipe-ing-miss { background:#f5f5f5; color:var(--text-light); text-decoration:line-through; }
+.recipe-result-meta { display:flex; gap:10px; flex-wrap:wrap; font-size:11px; color:var(--text-light); }
+.recipe-result-meta span { display:flex; align-items:center; gap:3px; }
+.recipe-empty { text-align:center; padding:30px 16px; color:var(--text-light); }
+
 /* 打卡 */
 .checkin-calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
 .cal-day-header { text-align:center; font-size:11px; color:var(--text-light); padding:4px 0; }
@@ -393,7 +425,8 @@ const navItems=[
   {id:'home',label:'首页',icon:'🏠'},{id:'plan',label:'每日计划',icon:'📋'},
   {id:'inspire',label:'灵感每日推送',icon:'💡'},{id:'meme',label:'热梗追踪',icon:'🔥',badge:'HOT'},
   {id:'travel',label:'旅游攻略',icon:'✈️'},{id:'book',label:'每日荐书',icon:'📚'},
-  {id:'english',label:'英语学习',icon:'🌍'},{id:'checkin',label:'打卡记录',icon:'✅'},
+  {id:'english',label:'英语学习',icon:'🌍'},{id:'recipe',label:'食材找食谱',icon:'🍳'},
+  {id:'checkin',label:'打卡记录',icon:'✅'},
 ];
 let currentPage='home';
 
@@ -419,6 +452,7 @@ function renderPage(pageId){
     case 'travel':main.innerHTML=renderTravel();break;
     case 'book':main.innerHTML=renderBook();break;
     case 'english':main.innerHTML=renderEnglish();break;
+    case 'recipe':main.innerHTML=renderRecipe();break;
     case 'checkin':main.innerHTML=renderCheckin();break;
     default:main.innerHTML=renderHome();
   }
@@ -931,6 +965,185 @@ function checkAnswer(idx,selected,correct){
 }
 
 function shuffleArray(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ===== 食材找食谱 =====
+const recipeData=[
+  {name:'番茄炒蛋',icon:'🍳',time:'10分钟',difficulty:'简单',servings:'2人份',
+   desc:'国民家常菜，酸甜下饭，零失败入门菜。番茄的酸甜裹着嫩滑鸡蛋，百吃不厌。',
+   ingredients:['番茄','鸡蛋','葱','盐','糖','食用油'],
+   steps:['鸡蛋打散加少许盐，番茄切块，葱切花','热锅冷油，倒入蛋液划散盛出','底油炒番茄至出汁，加糖、盐调味','倒回鸡蛋翻匀，撒葱花出锅']},
+  {name:'蛋炒饭',icon:'🍚',time:'8分钟',difficulty:'简单',servings:'1人份',
+   desc:'剩米饭的最佳归宿，粒粒分明，蛋香四溢。深夜食堂的灵魂料理。',
+   ingredients:['米饭','鸡蛋','葱','盐','酱油','食用油'],
+   steps:['鸡蛋打散，葱切葱花，米饭提前打散','热油下蛋液快速炒散','倒入米饭大火翻炒至粒粒分明','加盐、酱油调味，撒葱花出锅']},
+  {name:'番茄蛋汤',icon:'🍅',time:'15分钟',difficulty:'简单',servings:'2人份',
+   desc:'暖胃快手汤，酸甜开胃。饭前来一碗，胃口大开。',
+   ingredients:['番茄','鸡蛋','葱','盐','香油','淀粉'],
+   steps:['番茄切小块，鸡蛋打散','水烧开下番茄煮3分钟','水淀粉勾芡，淋入蛋液成蛋花','加盐、香油，撒葱花']},
+  {name:'青椒土豆丝',icon:'🥔',time:'15分钟',difficulty:'简单',servings:'2人份',
+   desc:'清脆爽口的下饭菜，土豆丝切得越细越入味。讲究大火快炒保持脆感。',
+   ingredients:['土豆','青椒','蒜','盐','醋','食用油'],
+   steps:['土豆切细丝泡水去淀粉，青椒切丝','热油爆香蒜末','下土豆丝大火快炒2分钟','加青椒丝、盐、醋翻炒匀出锅']},
+  {name:'土豆炖牛肉',icon:'🥩',time:'60分钟',difficulty:'中等',servings:'3人份',
+   desc:'软烂入味的经典炖菜，牛肉酥烂、土豆绵密，汤汁拌饭一绝。',
+   ingredients:['牛肉','土豆','胡萝卜','姜','葱','八角','酱油','盐','料酒'],
+   steps:['牛肉切块冷水下锅焯水','爆香葱姜八角，下牛肉翻炒','加酱油、料酒、热水炖40分钟','下土豆、胡萝卜炖20分钟，加盐收汁']},
+  {name:'青椒肉丝',icon:'🌶️',time:'15分钟',difficulty:'中等',servings:'2人份',
+   desc:'川菜经典，青椒清香配肉丝滑嫩，下饭神器。讲究肉丝嫩滑、青椒脆爽。',
+   ingredients:['猪肉','青椒','姜','蒜','酱油','盐','料酒','淀粉','食用油'],
+   steps:['猪肉切丝加酱油、料酒、淀粉抓匀腌制10分钟','青椒切丝，姜蒜切末','热油滑炒肉丝变色盛出','底油爆香姜蒜，下青椒丝炒断生，倒回肉丝调味出锅']},
+  {name:'蒜蓉西兰花',icon:'🥦',time:'8分钟',difficulty:'简单',servings:'2人份',
+   desc:'健康低脂的清肠菜，蒜香浓郁，翠绿爽口。减脂人群的福音。',
+   ingredients:['西兰花','蒜','盐','食用油','蚝油'],
+   steps:['西兰花掰小朵焯水1分钟','蒜切末','热油爆香蒜末','下西兰花翻炒，加盐、蚝油出锅']},
+  {name:'红烧豆腐',icon:'🍲',time:'15分钟',difficulty:'简单',servings:'2人份',
+   desc:'嫩豆腐吸饱酱汁，咸香下饭。素食者的蛋白质担当。',
+   ingredients:['豆腐','葱','姜','蒜','酱油','盐','糖','淀粉','食用油'],
+   steps:['豆腐切块，葱姜蒜切末','热油煎豆腐两面金黄','爆香葱姜蒜，加酱油、糖、水','下豆腐炖3分钟，水淀粉勾芡，撒葱花']},
+  {name:'黄瓜拌木耳',icon:'🥗',time:'10分钟',difficulty:'简单',servings:'2人份',
+   desc:'清爽开胃的凉拌菜，脆嫩爽口，夏日必备。木耳脆、黄瓜清香。',
+   ingredients:['黄瓜','木耳','蒜','醋','盐','香油','辣椒油'],
+   steps:['木耳泡发焯水，黄瓜拍碎切段','蒜切末','所有调料拌匀','浇在黄瓜木耳上拌匀即可']},
+  {name:'鸡蛋羹',icon:'🍮',time:'15分钟',difficulty:'简单',servings:'1人份',
+   desc:'嫩滑如布丁的蒸蛋，老少皆宜。加几滴酱油更香。',
+   ingredients:['鸡蛋','葱','盐','酱油','香油','温水'],
+   steps:['鸡蛋打散加1.5倍温水和盐搅匀','过筛去气泡，盖保鲜膜','水开上锅中小火蒸10分钟','淋酱油、香油，撒葱花']},
+  {name:'葱油拌面',icon:'🍜',time:'15分钟',difficulty:'简单',servings:'1人份',
+   desc:'上海经典，葱香浓郁，简单到极致就是美味。一把葱、一碗面、一勺酱。',
+   ingredients:['面条','葱','酱油','糖','食用油','盐'],
+   steps:['葱切长段','热油小火煎葱段至焦黄','加酱油、糖熬成葱油汁','面条煮熟过水，浇葱油汁拌匀']},
+  {name:'韭菜炒蛋',icon:'🥚',time:'10分钟',difficulty:'简单',servings:'2人份',
+   desc:'春日时令菜，韭菜鲜香配鸡蛋嫩滑，简单却惊艳。',
+   ingredients:['韭菜','鸡蛋','盐','食用油'],
+   steps:['韭菜切段，鸡蛋打散','热油炒蛋盛出','下韭菜大火快炒30秒','倒回鸡蛋翻匀，加盐出锅']},
+  {name:'蒜蓉粉丝蒸虾',icon:'🦐',time:'20分钟',difficulty:'中等',servings:'2人份',
+   desc:'宴客级的颜值菜，蒜香渗入粉丝和虾肉，鲜美翻倍。',
+   ingredients:['虾','粉丝','蒜','葱','酱油','食用油','盐'],
+   steps:['粉丝泡软铺底，虾开背去线摆在粉丝上','蒜末炒出香味浇在虾上','水开上锅蒸6分钟','淋酱油，撒葱花，浇热油']},
+  {name:'西红柿牛腩',icon:'🍅',time:'90分钟',difficulty:'中等',servings:'4人份',
+   desc:'酸甜浓郁的硬菜，牛腩软烂入味，番茄汤汁拌饭绝配。',
+   ingredients:['牛肉','番茄','土豆','洋葱','姜','番茄酱','盐','酱油','料酒'],
+   steps:['牛腩切块焯水','爆香姜片，下牛腩、料酒、酱油翻炒','加水炖60分钟','下番茄块、土豆、洋葱、番茄酱炖20分钟，加盐']},
+  {name:'蛋花粥',icon:'粥',time:'40分钟',difficulty:'简单',servings:'2人份',
+   desc:'清淡养胃的早晚餐，蛋花滑嫩、米香浓郁。肠胃不适时的温柔抚慰。',
+   ingredients:['大米','鸡蛋','葱','盐','香油'],
+   steps:['大米淘净加水煮粥','鸡蛋打散','粥将好时淋入蛋液搅成蛋花','加盐、香油，撒葱花']},
+  {name:'土豆泥',icon:'🥔',time:'20分钟',difficulty:'简单',servings:'2人份',
+   desc:'绵密顺滑的西式配菜，黄油奶香浓郁。小朋友的最爱。',
+   ingredients:['土豆','牛奶','盐','黄油','黑胡椒'],
+   steps:['土豆去皮切块蒸熟','趁热压成泥','加黄油、牛奶、盐、黑胡椒搅匀','装盘即可']},
+];
+
+// 食材分类(用于快捷选择)
+const commonIngredients=[
+  '鸡蛋','番茄','土豆','青椒','葱','姜','蒜','米饭','面条','猪肉','牛肉','虾','豆腐','西兰花','黄瓜','木耳','韭菜','粉丝','洋葱','胡萝卜','大米','食用油','盐','酱油','醋','糖','料酒','淀粉','香油','蚝油','黑胡椒','黄油','牛奶','八角','辣椒油','番茄酱'
+];
+
+function renderRecipe(){
+  const selected=appData.recipeIngredients||[];
+  let html=`<div class="card"><div class="card-header"><span class="card-title">🍳 食材找食谱</span><span style="font-size:12px;color:var(--text-light)">输入你有的食材</span></div>
+    <div class="recipe-ingredient-input-row">
+      <input class="input" id="recipeIngInput" placeholder="输入食材名，如：鸡蛋、番茄…" onkeydown="if(event.key==='Enter')addRecipeIngredient()">
+      <button class="btn btn-green" onclick="addRecipeIngredient()">添加</button>
+    </div>
+    <div class="recipe-common-ingredients">
+      <div class="recipe-common-label">💡 常见食材（点击添加）</div>
+      <div class="recipe-common-tags">${commonIngredients.map(ing=>`<span class="recipe-common-tag" onclick="quickAddIngredient('${ing}')">${ing}</span>`).join('')}</div>
+    </div>
+    <div class="recipe-selected-ingredients" id="selectedIngs">${selected.length>0?selected.map((ing,i)=>`<span class="recipe-ing-tag">${ing}<span class="remove" onclick="removeRecipeIngredient(${i})">×</span></span>`).join(''):'<span style="font-size:12px;color:var(--text-light)">还没有添加食材</span>'}</div>
+    ${selected.length>0?`<button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="clearRecipeIngredients()">🗑️ 清空</button>`:''}
+  </div>`;
+
+  if(selected.length===0){
+    html+=`<div class="recipe-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">🍳</div><div style="font-size:13px">添加你的食材，看看能做什么菜吧！</div></div>`;
+  }else{
+    const results=matchRecipes(selected);
+    if(results.length===0){
+      html+=`<div class="recipe-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">🤔</div><div style="font-size:13px">暂无匹配食谱，试试添加更多食材</div></div>`;
+    }else{
+      html+=`<div class="card"><span class="card-sub">找到 ${results.length} 个食谱（按匹配度排序）</span></div>`;
+      results.forEach(r=>{
+        const recipe=r.recipe;const matchCount=r.matchCount;const total=recipe.ingredients.length;
+        const matchPct=Math.round((matchCount/total)*100);
+        let badgeClass='recipe-match-low',badgeText='';
+        if(matchCount===total){badgeClass='recipe-match-full';badgeText='✓ 全部齐';}
+        else if(matchPct>=60){badgeClass='recipe-match-partial';badgeText=`差${total-matchCount}样`;}
+        else{badgeClass='recipe-match-low';badgeText=`差${total-matchCount}样`;}
+        html+=`<div class="recipe-result-card">
+          <div class="recipe-result-header">
+            <div class="recipe-result-name">${recipe.icon} ${recipe.name}</div>
+            <span class="recipe-match-badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="recipe-result-desc">${recipe.desc}</div>
+          <div class="recipe-ingredients-row">
+            <span style="font-size:11px;color:var(--text-light);width:100%;margin-bottom:2px">所需食材：</span>
+            ${recipe.ingredients.map(ing=>{
+              const have=selected.some(s=>s===ing||(s.includes(ing)||ing.includes(s)));
+              return `<span class="tag ${have?'recipe-ing-have tag-green':'recipe-ing-miss'}">${ing}</span>`;
+            }).join('')}
+          </div>
+          <div class="recipe-result-meta">
+            <span>⏱️ ${recipe.time}</span><span>📊 ${recipe.difficulty}</span><span>🍽️ ${recipe.servings}</span>
+            <span style="color:var(--green);font-weight:600">匹配 ${matchCount}/${total}</span>
+          </div>
+          <button class="btn btn-sm btn-outline" style="margin-top:10px" onclick="toggleRecipeSteps('${recipe.name.replace(/'/g,"\\'")}')">📖 查看做法</button>
+          <div id="steps_${recipe.name}" style="display:none;margin-top:10px;padding:10px;background:var(--green-light);border-radius:8px;font-size:13px;line-height:1.8">
+            ${recipe.steps.map((s,i)=>`<div><strong>${i+1}.</strong> ${s}</div>`).join('')}
+          </div>
+        </div>`;
+      });
+    }
+  }
+  return html;
+}
+
+function matchRecipes(selected){
+  const results=[];
+  recipeData.forEach(recipe=>{
+    let matchCount=0;
+    recipe.ingredients.forEach(ing=>{
+      if(selected.some(s=>s===ing||(s.length>=2&&(s.includes(ing)||ing.includes(s))))){matchCount++;}
+    });
+    if(matchCount>0){
+      results.push({recipe,matchCount,total:recipe.ingredients.length});
+    }
+  });
+  results.sort((a,b)=>b.matchCount-a.matchCount||a.total-b.total);
+  return results;
+}
+
+function addRecipeIngredient(){
+  const input=document.getElementById('recipeIngInput');
+  const text=input.value.trim();
+  if(!text){showToast('请输入食材名');return;}
+  if(!appData.recipeIngredients)appData.recipeIngredients=[];
+  if(appData.recipeIngredients.includes(text)){showToast('已添加过该食材');return;}
+  appData.recipeIngredients.push(text);
+  saveData(appData);
+  renderPage('recipe');
+}
+function quickAddIngredient(ing){
+  if(!appData.recipeIngredients)appData.recipeIngredients=[];
+  if(appData.recipeIngredients.includes(ing)){showToast('已添加过');return;}
+  appData.recipeIngredients.push(ing);
+  saveData(appData);
+  renderPage('recipe');
+}
+function removeRecipeIngredient(idx){
+  appData.recipeIngredients.splice(idx,1);
+  saveData(appData);
+  renderPage('recipe');
+}
+function clearRecipeIngredients(){
+  appData.recipeIngredients=[];
+  saveData(appData);
+  renderPage('recipe');
+  showToast('已清空');
+}
+function toggleRecipeSteps(name){
+  const el=document.getElementById('steps_'+name);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
 
 // ===== 打卡 =====
 function renderCheckin(){
