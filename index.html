@@ -508,6 +508,44 @@ textarea.input { resize:vertical; min-height:70px; }
 .job-stat-label { font-size:11px; color:var(--text-light); margin-top:2px; }
 .job-empty { text-align:center; padding:30px 16px; color:var(--text-light); }
 
+/* 特价机票 */
+.flight-origin-box { background:linear-gradient(135deg,var(--green),var(--mint)); color:#fff;
+  border-radius:var(--radius); padding:14px 16px; margin-bottom:12px; box-shadow:0 4px 14px rgba(45,125,79,.22);
+  display:flex; align-items:center; gap:10px; }
+.flight-origin-box .label { font-size:12px; opacity:.85; }
+.flight-origin-box input { flex:1; background:rgba(255,255,255,.2); border:none; border-radius:8px;
+  padding:8px 12px; color:#fff; font-size:15px; font-weight:600; outline:none; }
+.flight-origin-box input::placeholder { color:rgba(255,255,255,.7); }
+.flight-today-card { background:var(--card); border-radius:var(--radius); overflow:hidden; margin-bottom:14px;
+  border:1px solid var(--border); box-shadow:var(--shadow); }
+.flight-today-img { width:100%; height:140px; background:linear-gradient(135deg,var(--green),var(--mint));
+  display:flex; align-items:center; justify-content:center; font-size:60px; }
+.flight-today-body { padding:14px; }
+.flight-today-tag { display:inline-block; padding:3px 10px; background:var(--green-light); color:var(--green-dark);
+  border-radius:10px; font-size:11px; font-weight:600; margin-bottom:6px; }
+.flight-today-name { font-size:20px; font-weight:700; margin-bottom:4px; }
+.flight-today-sub { font-size:13px; color:var(--text-mid); margin-bottom:8px; }
+.flight-today-desc { font-size:13px; color:var(--text-mid); line-height:1.6; margin-bottom:10px; }
+.flight-today-meta { display:flex; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--text-light); margin-bottom:10px; }
+.flight-today-meta span { display:flex; align-items:center; gap:3px; }
+.flight-deal-btns { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.flight-deal-btn { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius-sm);
+  padding:12px 8px; text-align:center; text-decoration:none; color:var(--text); cursor:pointer; transition:transform .12s; display:block; }
+.flight-deal-btn:active { transform:scale(.96); }
+.flight-deal-btn .icon { font-size:22px; }
+.flight-deal-btn .name { font-size:12px; font-weight:600; margin-top:3px; }
+.flight-deal-btn .sub { font-size:10px; color:var(--text-light); margin-top:2px; }
+.flight-tracked-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  border:1px solid var(--border); box-shadow:var(--shadow); border-left:3px solid var(--green); }
+.flight-tracked-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.flight-tracked-route { font-size:16px; font-weight:600; }
+.flight-tracked-price { font-size:18px; font-weight:700; color:var(--hot); }
+.flight-tracked-meta { font-size:12px; color:var(--text-light); margin-bottom:6px; }
+.flight-tracked-meta .tag { font-size:11px; }
+.flight-price-tag-low { background:#e8f7e8; color:#2d7d4f; }
+.flight-price-tag-mid { background:#fff5e6; color:#b8813a; }
+.flight-price-tag-high { background:#ffebeb; color:#c94a4a; }
+
 /* 打卡 */
 .checkin-calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
 .cal-day-header { text-align:center; font-size:11px; color:var(--text-light); padding:4px 0; }
@@ -602,7 +640,7 @@ const navItems=[
   {id:'inspire',label:'灵感每日推送',icon:'💡'},{id:'meme',label:'热梗追踪',icon:'🔥',badge:'HOT'},
   {id:'travel',label:'旅游攻略',icon:'✈️'},{id:'book',label:'每日荐书',icon:'📚'},
   {id:'english',label:'英语学习',icon:'🌍'},{id:'recipe',label:'食材找食谱',icon:'🍳'},
-  {id:'asset',label:'资产记账',icon:'💰'},{id:'game',label:'小游戏',icon:'🎮'},{id:'job',label:'求职管理',icon:'💼'},{id:'checkin',label:'打卡记录',icon:'✅'},
+  {id:'asset',label:'资产记账',icon:'💰'},{id:'game',label:'小游戏',icon:'🎮'},  {id:'job',label:'求职管理',icon:'💼'},{id:'flight',label:'特价机票',icon:'✈️'},{id:'checkin',label:'打卡记录',icon:'✅'},
 ];
 let currentPage='home';
 
@@ -632,6 +670,7 @@ function renderPage(pageId){
     case 'asset':main.innerHTML=renderAsset();break;
     case 'game':main.innerHTML=renderGame();break;
     case 'job':main.innerHTML=renderJob();break;
+    case 'flight':main.innerHTML=renderFlight();break;
     case 'checkin':main.innerHTML=renderCheckin();break;
     default:main.innerHTML=renderHome();
   }
@@ -2113,6 +2152,168 @@ function cycleJobStatus(idx){
   const s=JOB_STATUS.find(x=>x.id===j.status);
   showToast('状态：'+s.label);
 }
+
+// ===== 特价机票 =====
+const DESTINATIONS=[
+  {name:'大理',icon:'🏔️',region:'国内·云南',season:'3-10月',days:'4-5天',desc:'苍山洱海，风花雪月。环洱海骑行、逛古城、发呆晒太阳，治愈系首选。'},
+  {name:'厦门',icon:'🌊',region:'国内·福建',season:'3-5月/10-12月',days:'3-4天',desc:'鼓浪屿的钢琴声、曾厝垵的小吃、环岛路的海风，文艺青年的乌托邦。'},
+  {name:'成都',icon:'🐼',region:'国内·四川',season:'四季皆宜',days:'3-4天',desc:'宽窄巷子吃火锅、看大熊猫、人民公园喝茶掏耳朵，巴适得很。'},
+  {name:'西安',icon:'🏛️',region:'国内·陕西',season:'3-5月/9-11月',days:'3-4天',desc:'兵马俑、大唐不夜城、回民街肉夹馍，穿越千年的古都。'},
+  {name:'青岛',icon:'🍺',region:'国内·山东',season:'6-9月',days:'3天',desc:'栈桥海风、八大关洋房、啤酒节狂欢，夏天必去。'},
+  {name:'丽江',icon:'🌄',region:'国内·云南',season:'4-10月',days:'4-5天',desc:'玉龙雪山、古城夜景、泸沽湖摩梭风情，浪漫到骨子里。'},
+  {name:'三亚',icon:'🏝️',region:'国内·海南',season:'10-3月',days:'4-5天',desc:'亚龙湾沙滩、蜈支洲岛潜水、椰林海风，国内热带度假天花板。'},
+  {name:'张家界',icon:'⛰️',region:'国内·湖南',season:'4-11月',days:'3-4天',desc:'阿凡达取景地，奇峰三千、秀水八百，震撼到失语。'},
+  {name:'桂林',icon:'🚣',region:'国内·广西',season:'4-10月',days:'4天',desc:'漓江竹筏、阳朔西街、龙脊梯田，山水甲天下名不虚传。'},
+  {name:'北京',icon:'🏯',region:'国内·首都',season:'4-5月/9-10月',days:'4-5天',desc:'故宫长城、胡同烤鸭、环球影城，古今交融的帝都。'},
+  {name:'上海',icon:'🌃',region:'国内·魔都',season:'3-5月/9-11月',days:'3-4天',desc:'外滩夜景、迪士尼、武康路咖啡，最洋气的都市。'},
+  {name:'拉萨',icon:'🕌',region:'国内·西藏',season:'5-10月',days:'5-7天',desc:'布达拉宫、大昭寺、纳木错，离天空最近的信仰之城。'},
+  {name:'北海道',icon:'❄️',region:'境外·日本',season:'12-2月/7-8月',days:'5-6天',desc:'冬天滑雪温泉、夏天花海薰衣草，一年四季都值得。'},
+  {name:'曼谷',icon:'🛕',region:'境外·泰国',season:'11-3月',days:'5天',desc:'大皇宫、湄南河夜市、冬阴功汤，性价比超高的出境首选。'},
+  {name:'清迈',icon:'🌿',region:'境外·泰国',season:'11-2月',days:'4天',desc:'古城寺庙、夜市小吃、大象营，慢生活的代名词。'},
+  {name:'巴厘岛',icon:'🌺',region:'境外·印尼',season:'4-10月',days:'5-6天',desc:'乌布稻田、海神庙日落、悬崖泳池，蜜月圣地。'},
+  {name:'大阪',icon:'🍣',region:'境外·日本',season:'3-5月/10-11月',days:'4-5天',desc:'道顿堀美食、环球影城、奈良小鹿，关西玩个够。'},
+  {name:'首尔',icon:'🎎',region:'境外·韩国',season:'4-5月/9-10月',days:'4天',desc:'明洞购物、弘大咖啡、景福宫韩服，韩剧打卡地。'},
+  {name:'新加坡',icon:'🦁',region:'境外·新加坡',season:'全年',days:'3-4天',desc:'环球影城、滨海湾花园、辣椒螃蟹，花园城市。'},
+  {name:'芽庄',icon:'🥥',region:'境外·越南',season:'1-8月',days:'4-5天',desc:'珍珠岛、泥浆浴、海鲜大餐，越南海滨度假性价比之王。'},
+];
+const FLIGHT_PLATFORMS=[
+  {id:'ctrip',name:'携程',icon:'🛫',url:'https://flights.ctrip.com/online/list/oneway-{from}-{to}?depdate={date}'},
+  {id:'qunar',name:'去哪儿',icon:'🛩️',url:'https://flight.qunar.com/site/oneway_list.htm?fromCity={from}&toCity={to}&fromDate={date}'},
+  {id:'fliggy',name:'飞猪',icon:'🐷',url:'https://www.fliggy.com/flight/domestic-search?depCity={from}&arrCity={to}&depDate={date}'},
+  {id:'tongcheng',name:'同程',icon:'🚀',url:'https://www.ly.com/flights/itinerary/oneway/{from}-{to}?date={date}'},
+];
+function getFlightData(){
+  if(!appData.flight)appData.flight={origin:'重庆',tracked:[]};
+  return appData.flight;
+}
+function getTodayDest(){
+  const today=new Date();
+  const dayOfYear=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);
+  return DESTINATIONS[dayOfYear%DESTINATIONS.length];
+}
+function renderFlight(){
+  const d=getFlightData();
+  const dest=getTodayDest();
+  const origin=d.origin||'重庆';
+  const today=new Date().toISOString().slice(0,10);
+  let html=`
+    <div class="flight-origin-box">
+      <span class="label">🛫 出发地</span>
+      <input type="text" value="${origin.replace(/"/g,'&quot;')}" placeholder="如：重庆" onblur="saveFlightOrigin(this.value)">
+    </div>`;
+  // 今日推荐
+  html+=`<div class="card"><span class="card-sub">📅 今日推荐目的地（每天换一个）</span></div>`;
+  html+=`<div class="flight-today-card">
+    <div class="flight-today-img">${dest.icon}</div>
+    <div class="flight-today-body">
+      <div class="flight-today-tag">🔥 今日推荐</div>
+      <div class="flight-today-name">${dest.name}</div>
+      <div class="flight-today-sub">${dest.region}</div>
+      <div class="flight-today-desc">${dest.desc}</div>
+      <div class="flight-today-meta">
+        <span>🌸 最佳季节：${dest.season}</span>
+        <span>📅 建议天数：${dest.days}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-light);margin-bottom:8px">💡 点击下方按钮查询「${origin} → ${dest.name}」特价机票：</div>
+      <div class="flight-deal-btns">`;
+  const fromEnc=encodeURIComponent(origin);const toEnc=encodeURIComponent(dest.name);
+  FLIGHT_PLATFORMS.forEach(p=>{
+    const url=p.url.replace('{from}',fromEnc).replace('{to}',toEnc).replace('{date}',today);
+    html+=`<a class="flight-deal-btn" href="${url}" target="_blank">
+      <div class="icon">${p.icon}</div><div class="name">${p.name}</div>
+      <div class="sub">查特价</div></a>`;
+  });
+  html+=`</div></div></div>`;
+  // 换一个推荐
+  html+=`<button class="btn btn-outline" style="width:100%;margin-bottom:14px" onclick="shuffleDest()">🔄 换一个推荐</button>`;
+  // 价格追踪
+  html+=`<div class="card"><span class="card-sub">💰 我追踪的机票（手动记录见到的低价）</span></div>`;
+  html+=`<button class="btn btn-green" style="width:100%;margin-bottom:10px" onclick="openFlightModal()">+ 记录一笔特价</button>`;
+  const tracked=d.tracked||[];
+  if(tracked.length===0){
+    html+=`<div class="job-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">💰</div>
+      <div style="font-size:13px">看到便宜机票就记下来，方便对比追踪</div></div>`;
+  }else{
+    const sorted=[...tracked].sort((a,b)=>(a.price||0)-(b.price||0));
+    const minPrice=sorted[0].price||1;
+    sorted.forEach(t=>{
+      const idx=tracked.indexOf(t);
+      const pct=t.price/minPrice;
+      let tagClass='flight-price-tag-mid',tagText='一般';
+      if(pct<=1.1){tagClass='flight-price-tag-low';tagText='✓ 捡漏';}
+      else if(pct>=1.5){tagClass='flight-price-tag-high';tagText='偏高';}
+      html+=`<div class="flight-tracked-card">
+        <div class="flight-tracked-top">
+          <div class="flight-tracked-route">${t.from} → ${t.to}</div>
+          <div class="flight-tracked-price">¥${t.price||'?'}</div>
+        </div>
+        <div class="flight-tracked-meta">
+          ${t.date?`📅 ${t.date} · `:''}${t.airline||''} · 记录于 ${t.recordedAt||''}
+          <span class="tag ${tagClass}" style="margin-left:6px">${tagText}</span>
+        </div>
+        ${t.note?`<div style="font-size:12px;color:var(--text-mid);margin-top:4px">${t.note}</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn btn-outline btn-sm" onclick="delFlight(${idx})" style="color:var(--danger)">🗑️ 删除</button>
+        </div>
+      </div>`;
+    });
+  }
+  html+=`<div class="asset-modal" id="flightModal" onclick="if(event.target===this)closeFlightModal()">
+    <div class="asset-modal-box" id="flightModalBox"></div></div>`;
+  return html;
+}
+function saveFlightOrigin(v){getFlightData().origin=v.trim()||'重庆';saveData(appData);}
+function shuffleDest(){
+  const cur=getTodayDest();
+  let next;do{next=DESTINATIONS[Math.floor(Math.random()*DESTINATIONS.length)];}while(next.name===cur.name);
+  // 临时替换今日推荐
+  const today=new Date();
+  const dayOfYear=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);
+  DESTINATIONS[dayOfYear%DESTINATIONS.length]=next;
+  renderPage('flight');
+}
+function openFlightModal(){
+  const d=getFlightData();
+  const today=new Date().toISOString().slice(0,10);
+  const box=document.getElementById('flightModalBox');
+  box.innerHTML=`<div class="asset-modal-title">记录特价机票</div>
+    <div class="asset-field"><div class="asset-field-label">出发地</div>
+      <input class="input" id="flFrom" value="${(d.origin||'重庆').replace(/"/g,'&quot;')}"></div>
+    <div class="asset-field"><div class="asset-field-label">目的地</div>
+      <input class="input" id="flTo" placeholder="如：大理"></div>
+    <div class="asset-field"><div class="asset-field-label">出发日期</div>
+      <input class="input" id="flDate" type="date" value="${today}"></div>
+    <div class="asset-field"><div class="asset-field-label">价格（元） *</div>
+      <input class="input" id="flPrice" type="number" placeholder="如：320" style="font-size:18px;font-weight:600"></div>
+    <div class="asset-field"><div class="asset-field-label">航司/平台（可选）</div>
+      <input class="input" id="flAirline" placeholder="如：西部航空/携程"></div>
+    <div class="asset-field"><div class="asset-field-label">备注（可选）</div>
+      <input class="input" id="flNote" placeholder="如：含托运、早班机"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-outline" style="flex:1" onclick="closeFlightModal()">取消</button>
+      <button class="btn btn-green" style="flex:1" onclick="saveFlight()">保存</button>
+    </div>`;
+  document.getElementById('flightModal').classList.add('open');
+}
+function saveFlight(){
+  const to=document.getElementById('flTo').value.trim();
+  const price=parseFloat(document.getElementById('flPrice').value);
+  if(!to){showToast('请填写目的地');return;}
+  if(!price||price<=0){showToast('请填写价格');return;}
+  const d=getFlightData();
+  d.tracked.push({
+    from:document.getElementById('flFrom').value.trim()||'重庆',
+    to,date:document.getElementById('flDate').value,
+    price,airline:document.getElementById('flAirline').value.trim(),
+    note:document.getElementById('flNote').value.trim(),
+    recordedAt:new Date().toISOString().slice(0,10),
+  });
+  saveData(appData);closeFlightModal();renderPage('flight');showToast('已记录');
+}
+function delFlight(idx){
+  showConfirm('删除这条记录？',()=>{const d=getFlightData();d.tracked.splice(idx,1);saveData(appData);renderPage('flight');showToast('已删除');});
+}
+function closeFlightModal(){document.getElementById('flightModal').classList.remove('open');}
 
 // ===== 打卡 =====
 function renderCheckin(){
