@@ -2177,11 +2177,11 @@ const DESTINATIONS=[
   {name:'芽庄',icon:'🥥',region:'境外·越南',season:'1-8月',days:'4-5天',desc:'珍珠岛、泥浆浴、海鲜大餐，越南海滨度假性价比之王。'},
 ];
 const FLIGHT_PLATFORMS=[
-  {id:'ctrip',name:'携程',icon:'🛫',url:'https://flights.ctrip.com/online/list/oneway-{from}-{to}?depdate={date}&cabin=y_s&lowprice=1'},
-  {id:'qunar',name:'去哪儿',icon:'🛩️',url:'https://flight.qunar.com/site/oneway_list.htm?fromCity={from}&toCity={to}&fromDate={date}&child=0&baby=0&cabinType=0'},
-  {id:'fliggy',name:'飞猪',icon:'🐷',url:'https://www.fliggy.com/flight/domestic-search?depCity={from}&arrCity={to}&depDate={date}'},
-  {id:'tongcheng',name:'同程',icon:'🚀',url:'https://www.ly.com/flights/itinerary/oneway/{from}-{to}?date={date}'},
-  {id:'trip',name:'Trip.com',icon:'🌍',url:'https://www.trip.com/flights/showfaresearch?dcity={from}&acity={to}&ddate={date}&triptype=ow&class=y&lowprice=1&quantity=1'},
+  {id:'ctrip',name:'携程',icon:'🛫',url:'https://m.ctrip.com/html5/flight/'},
+  {id:'qunar',name:'去哪儿',icon:'🛩️',url:'https://touch.qunar.com/h5/flight/'},
+  {id:'fliggy',name:'飞猪',icon:'🐷',url:'https://h5.m.taobao.com/trip/flight/search/index.html'},
+  {id:'tongcheng',name:'同程',icon:'🚀',url:'https://m.ly.com/flights/'},
+  {id:'trip',name:'Trip.com',icon:'🌍',url:'https://m.trip.com/'},
 ];
 function getFlightData(){
   if(!appData.flight)appData.flight={origin:'重庆',tracked:[]};
@@ -2216,10 +2216,11 @@ function renderFlight(){
   // 搜索结果
   const searchDest=appData.flightSearchDest||'';
   if(searchDest){
-    html+=`<div class="card"><span class="card-sub">🔎 「${origin} → ${searchDest}」点击平台查价</span></div>`;
+    html+=`<div class="card"><span class="card-sub">🔎 「${origin} → ${searchDest}」点击进入各平台搜票</span></div>
+    <div style="font-size:11px;color:var(--text-light);padding:0 4px 8px">💡 各平台规则不同，进入后请在搜索框选择「${origin}→${searchDest}」</div>`;
     const fromEnc=encodeURIComponent(origin);const toEnc=encodeURIComponent(searchDest);
     FLIGHT_PLATFORMS.forEach(p=>{
-      const url=p.url.replace('{from}',fromEnc).replace('{to}',toEnc).replace('{date}',today);
+      const url=p.url;
       html+=`<a href="${url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;text-decoration:none;color:var(--text);box-shadow:var(--shadow);transition:transform .12s">
         <div style="font-size:26px;width:40px;text-align:center">${p.icon}</div>
         <div style="flex:1"><div style="font-size:15px;font-weight:600">${p.name}</div>
@@ -2246,7 +2247,7 @@ function renderFlight(){
       <div class="flight-deal-btns">`;
   const fromEnc2=encodeURIComponent(origin);const toEnc2=encodeURIComponent(dest.name);
   FLIGHT_PLATFORMS.forEach(p=>{
-    const url=p.url.replace('{from}',fromEnc2).replace('{to}',toEnc2).replace('{date}',today);
+    const url=p.url;
     html+=`<a class="flight-deal-btn" href="${url}" target="_blank" rel="noopener">
       <div class="icon">${p.icon}</div><div class="name">${p.name}</div>
       <div class="sub">查特价</div></a>`;
