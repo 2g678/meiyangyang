@@ -2210,7 +2210,8 @@ function renderFlight(){
           <input type="text" id="flightSearchInput" value="${(appData.flightSearchDest||'').replace(/"/g,'&quot;')}" placeholder="想去哪？" style="width:100%;background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:8px 12px;color:#fff;font-size:15px;font-weight:600;outline:none">
         </div>
       </div>
-      <button class="btn" onclick="searchFlightDest()" style="width:100%;background:#fff;color:var(--green);font-weight:600;border:none;border-radius:10px;padding:10px">🔍 搜索特价机票</button>
+      <button class="btn" onclick="openAllFlightPlatforms('${origin.replace(/'/g,"\\'")}')" style="width:100%;background:#fff;color:var(--green);font-weight:600;border:none;border-radius:10px;padding:10px">🚀 一键打开四大平台比价</button>
+      <div style="font-size:10px;opacity:.75;margin-top:6px;text-align:center">💡 首次使用会询问是否允许弹窗，请选「允许」</div>
     </div>`;
   // 搜索结果
   const searchDest=appData.flightSearchDest||'';
@@ -2302,6 +2303,26 @@ function searchFlightDest(){
   const v=input?input.value.trim():'';
   if(!v){showToast('请输入目的地');return;}
   appData.flightSearchDest=v;saveData(appData);renderPage('flight');
+}
+function openAllFlightPlatforms(origin){
+  const input=document.getElementById('flightSearchInput');
+  const dest=input?input.value.trim():(appData.flightSearchDest||'');
+  if(!dest){showToast('请先输入目的地');return;}
+  appData.flightSearchDest=dest;saveData(appData);
+  const today=new Date().toISOString().slice(0,10);
+  const fromEnc=encodeURIComponent(origin);const toEnc=encodeURIComponent(dest);
+  let opened=0;
+  FLIGHT_PLATFORMS.forEach(p=>{
+    const url=p.url.replace('{from}',fromEnc).replace('{to}',toEnc).replace('{date}',today);
+    const w=window.open(url,'_blank');
+    if(w)opened++;
+  });
+  if(opened<FLIGHT_PLATFORMS.length){
+    showToast('⚠️ 浏览器拦截了部分弹窗，请允许弹窗后重试，或点下方按钮逐个打开');
+  }else{
+    showToast('✅ 已打开 '+opened+' 个平台，切换标签页比价');
+  }
+  renderPage('flight');
 }
 function clearFlightSearch(){appData.flightSearchDest='';saveData(appData);renderPage('flight');}
 function shuffleDest(){
