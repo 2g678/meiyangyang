@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="🐑 美羊羊">
+<title>🐑 美羊羊工作台</title>
+<script>
+(function(){var c=document.createElement('canvas');c.width=180;c.height=180;var ctx=c.getContext('2d');
+ctx.fillStyle='#2d7d4f';ctx.beginPath();ctx.roundRect(0,0,180,180,36);ctx.fill();
+ctx.fillStyle='#fff';ctx.font='bold 110px "PingFang SC","Microsoft YaHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('美',90,92);
+var u=c.toDataURL('image/png');
+var l=document.createElement('link');l.rel='apple-touch-icon';l.href=u;document.head.appendChild(l);
+var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;document.head.appendChild(f);})();
+</script>
+<style>
+:root {
+  --bg:#f5f0e8; --card:#fff; --green:#2d7d4f; --green-dark:#1e5c38; --green-light:#e8f2eb;
+  --mint:#4a9e6e; --text:#2d2d2d; --text-light:#8c8c8c; --text-mid:#5a5a5a;
+  --border:#e8e0d5; --shadow:0 1px 8px rgba(0,0,0,0.06); --radius:14px; --radius-sm:10px;
+  --nav-width:260px; --header-height:54px; --danger:#d4756b; --warning:#e8a840;
+  --hot:#e05555; --blue:#4a8fc4; --playbar-height:72px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--text); min-height:100vh; min-height:100dvh;
+  overflow-x:hidden; -webkit-tap-highlight-color:transparent; -webkit-font-smoothing:antialiased; font-size:15px;
+}
+.header { position:fixed; top:0; left:0; right:0; z-index:100; height:var(--header-height); background:#fff;
+  display:flex; align-items:center; padding:0 14px; border-bottom:1px solid var(--border); gap:10px; }
+.menu-btn { width:34px; height:34px; border:none; background:none; font-size:20px; cursor:pointer; color:var(--text);
+  display:flex; align-items:center; justify-content:center; border-radius:8px; transition:background .15s; }
+.menu-btn:active { background:var(--green-light); }
+.header-title { font-size:16px; font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.3); opacity:0; visibility:hidden; transition:.25s; }
+.overlay.open { opacity:1; visibility:visible; }
+.sidebar { position:fixed; top:0; left:0; bottom:0; z-index:201; width:var(--nav-width); background:#fff;
+  box-shadow:2px 0 20px rgba(0,0,0,0.06); transform:translateX(-100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex; flex-direction:column; }
+.sidebar.open { transform:translateX(0); }
+.sidebar-header { padding:18px 18px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.sidebar-avatar { width:40px; height:40px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:#fff; flex-shrink:0; }
+.sidebar-user { flex:1; min-width:0; }
+.sidebar-name { font-size:15px; font-weight:600; }
+.sidebar-desc { font-size:11px; color:var(--text-light); margin-top:1px; }
+.sidebar-nav { flex:1; overflow-y:auto; padding:6px 0; -webkit-overflow-scrolling:touch; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:12px 18px; cursor:pointer; transition:all .15s;
+  font-size:14px; border:none; background:none; width:100%; text-align:left; color:var(--text-mid);
+  border-left:3px solid transparent; -webkit-tap-highlight-color:transparent; }
+.nav-item:active { background:var(--green-light); }
+.nav-item.active { background:#eaf5ed; color:var(--green-dark); font-weight:600; border-left-color:var(--green); }
+.nav-icon { font-size:18px; width:22px; text-align:center; flex-shrink:0; }
+.nav-badge { margin-left:auto; font-size:10px; background:var(--hot); color:#fff; padding:2px 7px; border-radius:8px; font-weight:600; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+.sidebar-footer { padding:10px 18px; border-top:1px solid var(--border); font-size:11px; color:var(--text-light); text-align:center; }
+.main { padding-top:var(--header-height); min-height:100vh; min-height:100dvh; }
+.page { display:none; padding:14px; animation:fadeIn .22s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+.card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px; box-shadow:var(--shadow); border:1px solid var(--border); }
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.card-title { font-size:15px; font-weight:600; }
+.card-sub { font-size:12px; color:var(--text-light); }
+
+.btn { display:inline-flex; align-items:center; gap:5px; padding:9px 18px; border:none; border-radius:20px;
+  font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; white-space:nowrap;
+  -webkit-tap-highlight-color:transparent; font-family:inherit; }
+.btn-green { background:var(--green); color:#fff; }
+.btn-green:active { background:var(--green-dark); transform:scale(.97); }
+.btn-outline { background:#fff; color:var(--green); border:1.5px solid var(--green); }
+.btn-outline:active { background:var(--green-light); }
+.btn-sm { padding:5px 12px; font-size:12px; }
+.btn-block { width:100%; justify-content:center; }
+.btn-hot { background:var(--hot); color:#fff; }
+.btn-hot:active { opacity:.85; transform:scale(.97); }
+.btn-blue { background:var(--blue); color:#fff; }
+.btn-blue:active { opacity:.85; transform:scale(.97); }
+.btn-ghost { background:transparent; border:none; color:var(--text-light); padding:4px 8px; font-size:12px; }
+.btn-ghost:active { color:var(--green); }
+
+.tag { display:inline-block; padding:3px 9px; border-radius:10px; font-size:11px; font-weight:500; margin:2px 3px 2px 0; }
+.tag-green { background:var(--green-light); color:var(--green-dark); }
+.tag-warm { background:#fef5e7; color:#b8813a; }
+.tag-hot { background:#ffebeb; color:#c94a4a; }
+.tag-blue { background:#eaf0f8; color:#4a8fc4; }
+
+.input { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-size:14px;
+  background:#fff; color:var(--text); outline:none; transition:border .15s; font-family:inherit; }
+.input:focus { border-color:var(--green); }
+textarea.input { resize:vertical; min-height:70px; }
+
+.empty-state { text-align:center; padding:36px 16px; color:var(--text-light); }
+.empty-icon { font-size:44px; margin-bottom:10px; opacity:.6; }
+.empty-text { font-size:13px; }
+
+.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(16px);
+  background:#3a3a3a; color:#fff; padding:9px 20px; border-radius:18px; font-size:13px; z-index:400;
+  opacity:0; transition:all .25s; pointer-events:none; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* 播放器 */
+.playbar { position:fixed; bottom:0; left:0; right:0; z-index:150; height:var(--playbar-height);
+  background:#fff; border-top:1px solid var(--border); display:none; align-items:center; padding:0 14px;
+  gap:10px; box-shadow:0 -2px 12px rgba(0,0,0,0.04); }
+.playbar.active { display:flex; }
+.playbar-close { position:absolute; top:-8px; right:10px; width:22px; height:22px; border-radius:50%;
+  background:#eee; border:none; font-size:12px; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; color:var(--text-light); }
+.playbar-info { flex:1; min-width:0; }
+.playbar-title { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.playbar-sentence { font-size:11px; color:var(--text-light); margin-top:1px; }
+.playbar-controls { display:flex; align-items:center; gap:6px; }
+.playbar-btn { width:34px; height:34px; border-radius:50%; border:none; background:var(--green-light);
+  color:var(--green-dark); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .15s; }
+.playbar-btn:active { background:#d0e5d8; }
+.playbar-btn.play-btn { width:40px; height:40px; background:var(--green); color:#fff; font-size:18px; }
+.playbar-btn.play-btn:active { background:var(--green-dark); }
+.playbar-speed { padding:3px 8px; border-radius:8px; border:1px solid var(--border); font-size:11px;
+  background:#fff; cursor:pointer; color:var(--text-mid); }
+.playbar-progress { position:absolute; top:0; left:0; right:0; height:3px; background:var(--border); }
+.playbar-progress-bar { height:100%; background:var(--green); border-radius:0 2px 2px 0; transition:width .3s; }
+
+/* 首页 */
+.hero-card { background:linear-gradient(135deg,#e8f2eb,#f5f0e8); border-radius:var(--radius); padding:20px;
+  margin-bottom:14px; border:1px solid var(--border); }
+.hero-date { font-size:12px; color:var(--text-light); }
+.hero-greeting { font-size:20px; font-weight:700; margin:4px 0; }
+.hero-quote { font-size:13px; color:var(--text-light); font-style:italic; }
+.quick-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
+.quick-action { display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 6px;
+  background:var(--card); border-radius:var(--radius-sm); border:1px solid var(--border); cursor:pointer;
+  transition:all .15s; box-shadow:var(--shadow); }
+.quick-action:active { transform:scale(.95); background:var(--green-light); }
+.quick-action-icon { font-size:24px; }
+.quick-action-label { font-size:10px; color:var(--text-light); }
+.stats-row { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:14px; }
+.stat-card { background:var(--card); border-radius:var(--radius-sm); padding:14px; border:1px solid var(--border); box-shadow:var(--shadow); }
+.stat-num { font-size:24px; font-weight:700; color:var(--green-dark); }
+.stat-label { font-size:11px; color:var(--text-light); margin-top:2px; }
+
+/* 计划 */
+.plan-input-row { display:flex; gap:8px; margin-bottom:10px; }
+.plan-input-row .input { flex:1; }
+.plan-item { display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--card);
+  border-radius:var(--radius-sm); margin-bottom:6px; border:1px solid var(--border); }
+.plan-check { width:20px; height:20px; border-radius:50%; border:2px solid var(--green); flex-shrink:0;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; color:transparent;
+  transition:all .15s; }
+.plan-check.done { background:var(--green); color:#fff; }
+.plan-text { flex:1; font-size:13px; }
+.plan-text.done { text-decoration:line-through; color:var(--text-light); }
+.plan-del { width:26px; height:26px; border:none; background:none; font-size:15px; cursor:pointer;
+  color:#ccc; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.plan-del:active { color:var(--danger); background:#fef0f0; }
+.plan-progress { height:4px; background:#eee; border-radius:2px; margin-top:10px; overflow:hidden; }
+.plan-progress-bar { height:100%; background:var(--green); border-radius:2px; transition:width .3s; }
+
+/* 灵感 */
+.inspire-card { background:linear-gradient(135deg,#fefbf5,#fdf5e6); border-radius:var(--radius); padding:18px;
+  margin-bottom:10px; border:1px solid var(--border); position:relative; overflow:hidden; }
+.inspire-card::after { content:'💡'; position:absolute; right:14px; top:14px; font-size:28px; opacity:.25; }
+.inspire-tag { font-size:10px; color:var(--warning); font-weight:600; }
+.inspire-text { font-size:15px; margin:6px 0; line-height:1.6; font-weight:500; }
+.inspire-source { font-size:11px; color:var(--text-light); }
+.inspire-actions { display:flex; gap:6px; margin-top:10px; }
+
+/* 热梗 */
+.hot-platform-tabs { display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.platform-tab { padding:6px 13px; border-radius:16px; font-size:12px; border:1.5px solid var(--border);
+  background:#fff; cursor:pointer; white-space:nowrap; transition:all .15s; flex-shrink:0; }
+.platform-tab.active { background:var(--hot); color:#fff; border-color:var(--hot); }
+.meme-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:8px;
+  border:1px solid var(--border); box-shadow:var(--shadow); position:relative; overflow:hidden; }
+.meme-rank { position:absolute; top:8px; right:10px; font-size:26px; font-weight:800; color:var(--hot); opacity:.15; }
+.meme-title { font-size:15px; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.meme-hot-badge { background:var(--hot); color:#fff; font-size:9px; padding:2px 7px; border-radius:6px; }
+.meme-desc { font-size:13px; color:var(--text-light); line-height:1.6; }
+.meme-source { font-size:11px; color:var(--text-light); margin-top:6px; }
+
+/* 旅游 */
+.travel-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:12px; }
+.travel-card { background:var(--card); border-radius:var(--radius); overflow:hidden; border:1px solid var(--border);
+  box-shadow:var(--shadow); cursor:pointer; transition:all .15s; text-decoration:none; color:inherit; display:block; }
+.travel-card:active { transform:scale(.97); }
+.travel-img { height:100px; display:flex; align-items:center; justify-content:center; font-size:44px; }
+.travel-info { padding:10px 12px; }
+.travel-name { font-size:13px; font-weight:600; }
+.travel-desc { font-size:10px; color:var(--text-light); margin-top:2px; }
+.travel-link-hint { font-size:9px; color:var(--green); margin-top:3px; }
+
+/* 荐书 */
+.book-hero { background:linear-gradient(135deg,#f5f0e8,#ede1cc); border-radius:var(--radius); padding:20px;
+  margin-bottom:12px; border:1px solid var(--border); }
+.book-cover-area { display:flex; gap:14px; align-items:flex-start; }
+.book-cover-emoji { font-size:56px; flex-shrink:0; }
+.book-info { flex:1; }
+.book-name { font-size:18px; font-weight:700; margin-bottom:3px; }
+.book-author { font-size:12px; color:var(--text-light); margin-bottom:6px; }
+.book-rating { display:flex; align-items:center; gap:4px; margin-bottom:8px; }
+.book-stars { color:#e8a840; font-size:15px; }
+.book-score { font-size:17px; font-weight:700; color:#b8813a; }
+.book-section { margin-top:12px; }
+.book-section-title { font-size:13px; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:4px; }
+.book-section-content { font-size:13px; color:var(--text-light); line-height:1.7; }
+.book-actions { display:flex; gap:6px; margin-top:12px; }
+.book-history { background:var(--card); border-radius:var(--radius); padding:14px; border:1px solid var(--border); }
+.book-history-title { font-size:14px; font-weight:600; margin-bottom:8px; }
+.book-mini { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+.book-mini:last-child { border-bottom:none; }
+.book-mini-emoji { font-size:24px; flex-shrink:0; }
+.book-mini-info { flex:1; min-width:0; }
+.book-mini-name { font-size:13px; font-weight:500; }
+.book-mini-author { font-size:11px; color:var(--text-light); }
+
+/* 英语学习列表 */
+.eng-level-tabs { display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.eng-tab { padding:6px 13px; border-radius:16px; font-size:12px; border:1.5px solid var(--border);
+  background:#fff; cursor:pointer; white-space:nowrap; transition:all .15s; flex-shrink:0; }
+.eng-tab.active { background:var(--green); color:#fff; border-color:var(--green); }
+.eng-article-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:8px;
+  border:1px solid var(--border); box-shadow:var(--shadow); cursor:pointer; transition:all .15s; }
+.eng-article-card:active { transform:scale(.98); }
+.eng-article-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.eng-source-badge { background:#c00; color:#fff; font-size:9px; font-weight:700; padding:2px 7px; border-radius:3px; }
+.eng-article-title { font-size:14px; font-weight:600; }
+.eng-article-preview { font-size:12px; color:var(--text-light); margin-top:4px; line-height:1.5; }
+.eng-article-meta { font-size:11px; color:var(--text-light); margin-top:6px; display:flex; gap:12px; }
+.eng-article-meta span { display:flex; align-items:center; gap:3px; }
+
+/* 英语阅读器 */
+.reader-overlay { position:fixed; inset:0; z-index:300; background:#f5f0e8; display:none; flex-direction:column; }
+.reader-overlay.active { display:flex; }
+.reader-header { display:flex; align-items:center; padding:10px 14px; background:#fff; border-bottom:1px solid var(--border); gap:10px; }
+.reader-back { width:30px; height:30px; border:none; background:none; font-size:18px; cursor:pointer;
+  color:var(--text); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.reader-back:active { background:var(--green-light); }
+.reader-mode-tabs { display:flex; gap:4px; background:#f0ebe0; border-radius:16px; padding:2px; }
+.reader-mode-tab { padding:5px 14px; border-radius:14px; font-size:12px; border:none; cursor:pointer;
+  background:transparent; color:var(--text-mid); transition:all .15s; }
+.reader-mode-tab.active { background:#fff; color:var(--green-dark); font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.reader-body { flex:1; overflow-y:auto; padding:16px 14px 90px; -webkit-overflow-scrolling:touch; }
+.reader-article-title { font-size:18px; font-weight:700; margin-bottom:6px; }
+.reader-article-source { font-size:12px; color:var(--text-light); margin-bottom:16px; }
+.reader-sentence { display:block; padding:10px 0; border-bottom:1px solid var(--border); cursor:pointer;
+  transition:background .15s; border-radius:6px; padding-left:8px; padding-right:8px; margin:0 -8px; }
+.reader-sentence:active { background:var(--green-light); }
+.reader-sentence-en { font-size:15px; line-height:1.7; }
+.reader-sentence-zh { font-size:13px; color:var(--text-light); line-height:1.6; margin-top:4px; }
+.reader-sentence .word-tag { display:inline; color:var(--green); font-weight:600; cursor:pointer;
+  border-bottom:1px dashed var(--green); }
+.reader-sentence .word-tag:active { background:var(--green-light); }
+
+/* 单词训练 */
+.word-train-overlay { position:fixed; inset:0; z-index:310; background:#f5f0e8; display:none; flex-direction:column; }
+.word-train-overlay.active { display:flex; }
+.word-train-header { display:flex; align-items:center; padding:10px 14px; background:#fff; border-bottom:1px solid var(--border); gap:10px; }
+.word-train-body { flex:1; overflow-y:auto; padding:16px 14px; -webkit-overflow-scrolling:touch; }
+.word-card { background:var(--card); border-radius:var(--radius); padding:20px; margin-bottom:12px;
+  border:1px solid var(--border); box-shadow:var(--shadow); text-align:center; }
+.word-card-word { font-size:32px; font-weight:700; color:var(--green-dark); margin-bottom:6px; }
+.word-card-phonetic { font-size:14px; color:var(--text-light); margin-bottom:16px; }
+.word-card-meaning { font-size:16px; color:var(--text); margin-bottom:16px; }
+.word-card-example { font-size:13px; color:var(--text-light); line-height:1.6; font-style:italic; }
+.word-options { display:flex; flex-direction:column; gap:8px; }
+.word-option {
+  padding:14px; border-radius:var(--radius-sm); border:1.5px solid var(--border); background:#fff;
+  cursor:pointer; font-size:14px; text-align:left; transition:all .15s;
+}
+.word-option:active { background:var(--green-light); }
+.word-option.correct { border-color:var(--green); background:var(--green-light); color:var(--green-dark); }
+.word-option.wrong { border-color:var(--danger); background:#fef0f0; color:var(--danger); }
+.word-progress { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.word-progress-bar { flex:1; height:6px; background:#eee; border-radius:3px; overflow:hidden; }
+.word-progress-fill { height:100%; background:var(--green); border-radius:3px; transition:width .3s; }
+.word-progress-text { font-size:12px; color:var(--text-light); }
+
+/* 背单词模块 */
+.vocab-section { margin-bottom:16px; }
+.vocab-section-title { font-size:14px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.vocab-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.vocab-card {
+  background:var(--card); border-radius:var(--radius-sm); padding:12px; border:1px solid var(--border);
+  box-shadow:var(--shadow); cursor:pointer; transition:all .15s;
+}
+.vocab-card:active { transform:scale(.97); background:var(--green-light); }
+.vocab-word { font-size:15px; font-weight:600; color:var(--green-dark); }
+.vocab-phonetic { font-size:11px; color:var(--text-light); margin-top:2px; }
+.vocab-meaning { font-size:12px; color:var(--text-light); margin-top:4px; }
+.vocab-short-card {
+  background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  border:1px solid var(--border); box-shadow:var(--shadow);
+}
+.vocab-short-title { font-size:14px; font-weight:600; margin-bottom:6px; }
+.vocab-short-text { font-size:13px; color:var(--text-light); line-height:1.7; }
+.vocab-short-words { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+
+/* 打卡 */
+.checkin-calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
+.cal-day-header { text-align:center; font-size:11px; color:var(--text-light); padding:4px 0; }
+.cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:50%;
+  font-size:13px; cursor:pointer; transition:all .15s; border:1.5px solid transparent; }
+.cal-day.checked { background:var(--green); color:#fff; }
+.cal-day.today { border-color:var(--green); font-weight:600; }
+.cal-day.empty { color:#ddd; }
+.checkin-streak { display:flex; align-items:center; gap:8px; margin-bottom:16px; padding:14px;
+  background:var(--green-light); border-radius:var(--radius); }
+.streak-num { font-size:32px; font-weight:700; color:var(--green-dark); }
+.streak-text { font-size:14px; color:var(--text); }
+
+@media(min-width:768px) {
+  .sidebar { transform:translateX(0); }
+  .main { margin-left:var(--nav-width); }
+  .header { left:var(--nav-width); }
+  .menu-btn { display:none; }
+  .overlay { display:none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+  <span class="header-title" id="headerTitle">首页</span>
+</header>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-nav" id="sidebarNav"></div>
+  <div class="sidebar-footer">🐑 美羊羊的创作工作台 v3.0</div>
+</nav>
+
+<div class="main" id="mainContent"></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- 底部播放器 -->
+<div class="playbar" id="playbar">
+  <div class="playbar-progress"><div class="playbar-progress-bar" id="playbarProgress" style="width:0%"></div></div>
+  <button class="playbar-close" onclick="closePlaybar()">×</button>
+  <div class="playbar-info">
+    <div class="playbar-title" id="playbarTitle">正在播放</div>
+    <div class="playbar-sentence" id="playbarSentence">第 1 句</div>
+  </div>
+  <div class="playbar-controls">
+    <button class="playbar-btn" onclick="prevSentence()">⏮</button>
+    <button class="playbar-btn play-btn" id="playPauseBtn" onclick="togglePlay()">▶</button>
+    <button class="playbar-btn" onclick="nextSentence()">⏭</button>
+    <button class="playbar-speed" id="speedBtn" onclick="toggleSpeed()">1.0x</button>
+  </div>
+</div>
+
+<!-- 英语阅读器 -->
+<div class="reader-overlay" id="readerOverlay">
+  <div class="reader-header">
+    <button class="reader-back" onclick="closeReader()">←</button>
+    <div class="reader-mode-tabs">
+      <button class="reader-mode-tab active" onclick="setReaderMode('en')" id="modeEn">英文</button>
+      <button class="reader-mode-tab" onclick="setReaderMode('zh')" id="modeZh">译文</button>
+      <button class="reader-mode-tab" onclick="setReaderMode('both')" id="modeBoth">双语</button>
+    </div>
+    <button class="btn btn-sm btn-green" onclick="openWordTrain()">📝 单词训练</button>
+  </div>
+  <div class="reader-body" id="readerBody"></div>
+</div>
+
+<!-- 单词训练 -->
+<div class="word-train-overlay" id="wordTrainOverlay">
+  <div class="word-train-header">
+    <button class="reader-back" onclick="closeWordTrain()">←</button>
+    <span style="font-size:15px;font-weight:600">📝 单词训练</span>
+    <button class="btn btn-sm btn-ghost" onclick="closeWordTrain()">退出</button>
+  </div>
+  <div class="word-train-body" id="wordTrainBody"></div>
+</div>
+
+<script>
+// ========== 数据存储 ==========
+const STORAGE_KEY='creator_workspace_v3';
+function loadData(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):getDefaultData()}catch(e){return getDefaultData()}}
+function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
+function getDefaultData(){return{plans:[{id:1,text:'完成今日文章初稿',done:false},{id:2,text:'学习今日英语短文',done:true},{id:3,text:'了解今日热梗趋势',done:false}],planIdCounter:4,checkins:{},currentBookIndex:0,engLevel:'intermediate',engSubTab:'articles',readerMode:'both',playSpeed:1.0,playSentence:0,playPlaying:false,vocabLearned:[]}}
+let appData=loadData();
+
+// ========== 导航 ==========
+const navItems=[
+  {id:'home',label:'首页',icon:'🏠'},{id:'plan',label:'每日计划',icon:'📋'},
+  {id:'inspire',label:'灵感每日推送',icon:'💡'},{id:'meme',label:'热梗追踪',icon:'🔥',badge:'HOT'},
+  {id:'travel',label:'旅游攻略',icon:'✈️'},{id:'book',label:'每日荐书',icon:'📚'},
+  {id:'english',label:'英语学习',icon:'🌍'},{id:'checkin',label:'打卡记录',icon:'✅'},
+];
+let currentPage='home';
+
+function buildSidebar(){
+  document.getElementById('sidebarNav').innerHTML=navItems.map(item=>`
+    <button class="nav-item${item.id===currentPage?' active':''}" onclick="switchPage('${item.id}')" data-page="${item.id}">
+      <span class="nav-icon">${item.icon}</span>${item.label}${item.badge?`<span class="nav-badge">${item.badge}</span>`:''}
+    </button>`).join('');
+}
+function switchPage(pageId){currentPage=pageId;buildSidebar();const item=navItems.find(n=>n.id===pageId);document.getElementById('headerTitle').textContent=item?item.label:'';closeSidebar();renderPage(pageId);window.scrollTo({top:0,behavior:'smooth'});}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._timeout);t._timeout=setTimeout(()=>t.classList.remove('show'),2000);}
+
+// ========== 页面渲染 ==========
+function renderPage(pageId){
+  const main=document.getElementById('mainContent');
+  switch(pageId){
+    case 'home':main.innerHTML=renderHome();break;
+    case 'plan':main.innerHTML=renderPlan();break;
+    case 'inspire':main.innerHTML=renderInspire();break;
+    case 'meme':main.innerHTML=renderMeme();break;
+    case 'travel':main.innerHTML=renderTravel();break;
+    case 'book':main.innerHTML=renderBook();break;
+    case 'english':main.innerHTML=renderEnglish();break;
+    case 'checkin':main.innerHTML=renderCheckin();break;
+    default:main.innerHTML=renderHome();
+  }
+}
+
+// ===== 首页 =====
+function renderHome(){
+  const now=new Date();const hours=now.getHours();
+  const greeting=hours<6?'夜深了':hours<12?'早上好':hours<18?'下午好':'晚上好';
+  const days=['日','一','二','三','四','五','六'];
+  const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${days[now.getDay()]}`;
+  const quotes=['创作是灵魂的呼吸，每一次输出都是成长的印记 ✨','灵感不在远方，就在你认真生活的每个瞬间 🌿','追踪热梗、读书旅行、学好英语——每天都是新的冒险 🚀'];
+  const quote=quotes[Math.floor(Math.random()*quotes.length)];
+  const planDone=appData.plans.filter(p=>p.done).length;const planTotal=appData.plans.length;
+  const checkinCount=Object.keys(appData.checkins).length;const streak=calcStreak();
+  return `
+    <div class="hero-card"><div class="hero-date">${dateStr}</div><div class="hero-greeting">${greeting}，美羊羊 👋</div><div class="hero-quote">${quote}</div></div>
+    <div class="quick-actions">
+      <div class="quick-action" onclick="switchPage('meme')"><span class="quick-action-icon">🔥</span><span class="quick-action-label">热梗追踪</span></div>
+      <div class="quick-action" onclick="switchPage('book')"><span class="quick-action-icon">📚</span><span class="quick-action-label">每日荐书</span></div>
+      <div class="quick-action" onclick="switchPage('english')"><span class="quick-action-icon">🌍</span><span class="quick-action-label">英语学习</span></div>
+      <div class="quick-action" onclick="switchPage('travel')"><span class="quick-action-icon">✈️</span><span class="quick-action-label">旅游攻略</span></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">${planDone}/${planTotal}</div><div class="stat-label">今日计划完成</div></div>
+      <div class="stat-card"><div class="stat-num">🔥 ${streak}</div><div class="stat-label">连续打卡天数</div></div>
+      <div class="stat-card"><div class="stat-num">${checkinCount}</div><div class="stat-label">累计打卡</div></div>
+      <div class="stat-card"><div class="stat-num">${getTodayBook().title.slice(0,6)}…</div><div class="stat-label">今日荐书</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">📌 今日速览</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-hot btn-block" onclick="switchPage('meme')">🔥 查看今日热梗 — ${memeData.all[0]?.title||'回答我'}</button>
+        <button class="btn btn-green btn-block" onclick="switchPage('english')">🌍 英语30分钟盲听练习</button>
+        <button class="btn btn-outline btn-block" onclick="switchPage('checkin')">✅ 立即打卡</button>
+      </div>
+    </div>`;
+}
+
+// ===== 每日计划 =====
+function renderPlan(){
+  const plans=appData.plans;const doneCount=plans.filter(p=>p.done).length;
+  const progress=plans.length>0?Math.round((doneCount/plans.length)*100):0;
+  let html=`<div class="card"><div class="card-header"><span class="card-title">📋 今日计划</span><span class="card-sub">${doneCount}/${plans.length} 已完成</span></div><div class="plan-progress"><div class="plan-progress-bar" style="width:${progress}%"></div></div></div><div class="plan-input-row"><input class="input" id="planInput" placeholder="添加新计划..." onkeydown="if(event.key==='Enter')addPlan()"><button class="btn btn-green" onclick="addPlan()">添加</button></div>`;
+  if(plans.length===0){html+=`<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">还没有计划，添加一个吧</div></div>`;}
+  else{plans.forEach(p=>{html+=`<div class="plan-item"><div class="plan-check${p.done?' done':''}" onclick="togglePlan(${p.id})">✓</div><span class="plan-text${p.done?' done':''}">${escapeHTML(p.text)}</span><button class="plan-del" onclick="deletePlan(${p.id})">×</button></div>`;});}
+  return html;
+}
+function addPlan(){const input=document.getElementById('planInput');const text=input.value.trim();if(!text){showToast('请输入计划内容');return;}appData.plans.unshift({id:appData.planIdCounter++,text,done:false});saveData(appData);input.value='';renderPage('plan');showToast('计划已添加 ✓');}
+function togglePlan(id){const plan=appData.plans.find(p=>p.id===id);if(plan){plan.done=!plan.done;saveData(appData);renderPage('plan');}}
+function deletePlan(id){appData.plans=appData.plans.filter(p=>p.id!==id);saveData(appData);renderPage('plan');showToast('计划已删除');}
+
+// ===== 灵感推送 =====
+function renderInspire(){
+  const inspires=[
+    {text:'最好的创作来源于最真实的生活体验。今天不妨走出门，去感受街角的咖啡香、公园的鸟鸣声，把那些细微的感动记录下来。',source:'每日灵感',category:'写作'},
+    {text:'限制是创作的催化剂。试着给自己设定一个约束条件——比如只用100个字描述一个故事，你会发现创造力在约束中迸发。',source:'创意方法',category:'方法'},
+    {text:'不要等待完美的时刻。拿起笔，打开文档，写下第一个字。完成比完美更重要，先完成，再完美。',source:'行动指南',category:'激励'},
+    {text:'观察身边的人：地铁上打盹的上班族、菜市场讨价还价的大妈、公园里下棋的老人。每个人都是一个故事，每个故事都值得被书写。',source:'观察笔记',category:'写作'},
+    {text:'尝试用不同的媒介表达同一个想法——如果你习惯写文字，试试画出来；如果你习惯画画，试试用文字描述。跨界创作会带来惊喜。',source:'创意练习',category:'方法'},
+  ];
+  const picks=inspires.sort(()=>Math.random()-.5).slice(0,3);
+  let html=`<div class="card" style="text-align:center"><button class="btn btn-green" onclick="renderPage('inspire')">🔄 换一批灵感</button></div>`;
+  picks.forEach(item=>{html+=`<div class="inspire-card"><div class="inspire-tag">${item.category}</div><div class="inspire-text">${escapeHTML(item.text)}</div><div class="inspire-source">—— ${item.source}</div><div class="inspire-actions"><button class="btn btn-sm btn-green" onclick="inspireToPlan('${escapeHTML(item.text).replace(/'/g,"\\'")}')">📋 加入计划</button><button class="btn btn-sm btn-outline" onclick="copyTextDirect('${escapeHTML(item.text).replace(/'/g,"\\'")}')">📝 复制</button></div></div>`;});
+  return html;
+}
+function inspireToPlan(text){const div=document.createElement('div');div.innerHTML=text;const t=div.textContent;appData.plans.unshift({id:appData.planIdCounter++,text:'💡 '+t.slice(0,50)+'...',done:false});saveData(appData);showToast('已加入计划 ✓');}
+function copyTextDirect(text){const div=document.createElement('div');div.innerHTML=text;const t=div.textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>showToast('已复制到剪贴板 📋'));}}
+
+// ===== 热梗追踪 =====
+const memeData={all:[
+  {title:'回答我',desc:'源自B站主播"小明剑魔"的魔性口头禅，AI生成历史人物"灵魂拷问"视频横扫全网。杜甫、苏轼、李时珍集体"复活"怒斥现代人，共青团中央也下场玩梗，播放量破293万。',platform:'B站/全网',hot:'🔥🔥🔥🔥🔥',source:'B站 @小明剑魔'},
+  {title:'人生就是壮壮妈',desc:'乒乓球运动员王曼昱粉丝集体自称"壮壮妈"，融合养成系陪伴的幽默感。明星井胧模仿"壮壮妈"发型上热搜，张颂文电影造型也被关联玩梗。网友升华：在困境中保持壮实心态的生活哲学。',platform:'微博/抖音',hot:'🔥🔥🔥🔥',source:'微博体育圈'},
+  {title:'豆沙包竟是我自己',desc:'上海互联网公司深夜加班群诞生，PPT做到凌晨自嘲"又逗又傻又草包"的谐音缩写。迅速成为年终汇报季朋友圈标配，年轻人用幽默解构职场压力。',platform:'微博/朋友圈',hot:'🔥🔥🔥🔥',source:'微博职场话题'},
+  {title:'那咋了',desc:'源自东北方言，表达"那又怎样"的洒脱态度。从抖音短视频评论区蔓延至全网，成为面对质疑时的万能回复，代表年轻人"不内耗"的生活态度。',platform:'抖音/小红书',hot:'🔥🔥🔥',source:'抖音评论区'},
+  {title:'City不City',desc:'外国博主在中国旅游时创造的中英混杂表达，用来评价事物是否"城市化/洋气"。外交部发言人也在记者会上引用，成为中外文化交流的有趣注脚。',platform:'抖音/微博',hot:'🔥🔥🔥',source:'抖音 @外国博主'},
+  {title:'显眼包',desc:'形容那些在人群中格外"扎眼"、行为搞笑的人或事物。从综艺节目《奔跑吧》显眼包人设走红，到成为日常夸人"有个性"的代名词，完成从贬义到褒义的语义转换。',platform:'微博/综艺',hot:'🔥🔥🔥',source:'综艺《奔跑吧》'},
+  {title:'遥遥领先',desc:'华为发布会上的金句，被网友广泛玩梗。从科技圈蔓延至各行各业，成为表达"碾压式领先"的万能梗，也衍生出各种讽刺和调侃用法。',platform:'微博/抖音',hot:'🔥🔥🔥🔥',source:'华为发布会'},
+  {title:'电子榨菜',desc:'指吃饭时搭配观看的视频内容，如综艺、吃播、解说等。没有"电子榨菜"饭都不香了，精准描述了当代年轻人的用餐习惯，成为内容创作的重要标签。',platform:'B站/小红书',hot:'🔥🔥🔥',source:'B站弹幕文化'},
+],weibo:['回答我','人生就是壮壮妈','豆沙包竟是我自己','遥遥领先','显眼包'],douyin:['那咋了','City不City','回答我','电子榨菜','显眼包'],xiaohongshu:['City不City','电子榨菜','那咋了','显眼包','豆沙包竟是我自己'],bilibili:['回答我','电子榨菜','遥遥领先','人生就是壮壮妈','那咋了']};
+let memePlatform='all';
+let travelPlatform='baidu';
+function renderMeme(){
+  const platforms=[{id:'all',label:'🔥 全部'},{id:'weibo',label:'微博'},{id:'douyin',label:'抖音'},{id:'xiaohongshu',label:'小红书'},{id:'bilibili',label:'B站'}];
+  const filtered=memePlatform==='all'?memeData.all:memeData.all.filter(m=>memeData[memePlatform]&&memeData[memePlatform].includes(m.title));
+  let html=`<div class="card"><div class="card-header"><span class="card-title">🔥 热梗追踪</span><span style="font-size:12px;color:var(--hot)">实时更新</span></div><div class="hot-platform-tabs">${platforms.map(p=>`<button class="platform-tab${memePlatform===p.id?' active':''}" onclick="switchMemePlatform('${p.id}')">${p.label}</button>`).join('')}</div></div>`;
+  if(filtered.length===0){html+=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">该平台暂无热梗数据</div></div>`;}
+  else{filtered.forEach((m,i)=>{html+=`<div class="meme-card"><div class="meme-rank">#${i+1}</div><div class="meme-title">${m.title}<span class="meme-hot-badge">${m.hot}</span>${memePlatform==='all'?`<span class="tag tag-hot">${m.platform}</span>`:''}</div><div class="meme-desc">${m.desc}</div><div class="meme-source">📌 来源：${m.source}</div></div>`;});}
+  html+=`<div class="card" style="text-align:center;margin-top:8px"><p style="font-size:12px;color:var(--text-light);margin-bottom:8px">💡 数据来自各社交平台公开热搜及流行趋势</p><button class="btn btn-sm btn-outline" onclick="renderPage('meme')">🔄 刷新热梗</button></div>`;
+  return html;
+}
+function switchMemePlatform(pid){memePlatform=pid;renderPage('meme');}
+
+// ===== 旅游攻略 =====
+const travelData=[
+  {name:'大理洱海环游',icon:'🏞️',desc:'苍山洱海，风花雪月。环湖骑行120km绝美路线。',keyword:'大理旅游攻略 洱海环游路线 2025'},
+  {name:'成都美食之旅',icon:'🍜',desc:'火锅串串钵钵鸡，三天吃遍成都地道美味。',keyword:'成都美食攻略 必吃榜单 2025'},
+  {name:'京都古寺巡礼',icon:'⛩️',desc:'金阁寺银阁寺清水寺，感受千年古都的禅意。',keyword:'京都旅游攻略 寺庙巡礼 自由行'},
+  {name:'冰岛极光之旅',icon:'🌌',desc:'蓝冰洞、黑沙滩、北极光，一生必去一次的仙境。',keyword:'冰岛极光旅游攻略 最佳季节 自驾路线'},
+  {name:'曼谷小众玩法',icon:'🛕',desc:'避开人潮，探索曼谷文艺街区和隐藏美食。',keyword:'曼谷小众旅游攻略 文艺街区 本地美食'},
+  {name:'西安古都穿越',icon:'🏯',desc:'兵马俑+大唐不夜城+回民街，三日穿越千年。',keyword:'西安旅游攻略 兵马俑 大唐不夜城 美食'},
+];
+function renderTravel(){
+  const platforms=[
+    {id:'baidu',label:'百度',icon:'🔍'},
+    {id:'xiaohongshu',label:'小红书',icon:'📕'},
+    {id:'douyin',label:'抖音',icon:'🎵'},
+    {id:'mfw',label:'马蜂窝',icon:'🐝'},
+    {id:'ctrip',label:'携程',icon:'🏨'},
+  ];
+
+  function getTravelUrl(keyword, pid){
+    switch(pid){
+      case 'xiaohongshu': return `https://www.baidu.com/s?wd=${encodeURIComponent(keyword+' site:xiaohongshu.com')}`;
+      case 'douyin': return `https://www.douyin.com/search/${encodeURIComponent(keyword)}`;
+      case 'mfw': return `https://www.mafengwo.cn/search/s.php?q=${encodeURIComponent(keyword)}`;
+      case 'ctrip': return `https://you.ctrip.com/searchsite/?query=${encodeURIComponent(keyword)}`;
+      default: return `https://www.baidu.com/s?wd=${encodeURIComponent(keyword)}`;
+    }
+  }
+
+  let html=`<div class="card"><div class="card-header"><span class="card-title">✈️ 旅游攻略</span><span style="font-size:12px;color:var(--text-light)">选择平台搜索</span></div>
+    <div class="hot-platform-tabs">${platforms.map(p=>`<button class="platform-tab${travelPlatform===p.id?' active':''}" onclick="switchTravelPlatform('${p.id}')" style="${travelPlatform===p.id?'background:var(--green);border-color:var(--green);':''}">${p.icon} ${p.label}</button>`).join('')}</div>
+    <div class="travel-search"><input class="input" id="travelSearch" placeholder="🔍 搜索目的地攻略（如：大理、京都…）" onkeydown="if(event.key==='Enter')searchTravel()"></div></div>
+    <div class="travel-grid" id="travelGrid">`;
+
+  travelData.forEach(t=>{html+=`<a class="travel-card" href="${getTravelUrl(t.keyword, travelPlatform)}" target="_blank" rel="noopener"><div class="travel-img" style="background:${getTravelBg(t.icon)}">${t.icon}</div><div class="travel-info"><div class="travel-name">${t.name}</div><div class="travel-desc">${t.desc}</div><div class="travel-link-hint">🔗 在${platforms.find(p=>p.id===travelPlatform)?.label||'百度'}上查看 →</div></div></a>`;});
+
+  html+=`</div><div class="card"><div class="card-title" style="margin-bottom:8px">🌍 更多推荐目的地</div><div style="display:flex;flex-wrap:wrap;gap:6px">${['张家界','桂林','三亚','西藏','新疆','贵州','青岛','厦门','重庆','长沙'].map(d=>`<a href="${getTravelUrl(d+'旅游攻略 2025', travelPlatform)}" target="_blank" rel="noopener" style="text-decoration:none"><span class="tag tag-green" style="cursor:pointer;font-size:12px;padding:5px 12px">${d}</span></a>`).join('')}</div><p style="font-size:10px;color:var(--text-light);margin-top:8px">💡 当前搜索平台：${platforms.find(p=>p.id===travelPlatform)?.label||'百度'}，点击切换</p></div>`;
+  return html;
+}
+function switchTravelPlatform(pid){travelPlatform=pid;renderPage('travel');}
+function searchTravel(){const q=document.getElementById('travelSearch').value.trim();if(!q){showToast('请输入目的地');return;}
+  const urls={xiaohongshu:`https://www.baidu.com/s?wd=${encodeURIComponent(q+'旅游攻略 site:xiaohongshu.com')}`,douyin:`https://www.douyin.com/search/${encodeURIComponent(q+'旅游攻略')}`,mfw:`https://www.mafengwo.cn/search/s.php?q=${encodeURIComponent(q+'旅游')}`,ctrip:`https://you.ctrip.com/searchsite/?query=${encodeURIComponent(q+'旅游')}`,baidu:`https://www.baidu.com/s?wd=${encodeURIComponent(q+'旅游攻略 2025')}`};
+  window.open(urls[travelPlatform]||urls.baidu,'_blank');
+}
+function getTravelBg(icon){const map={'🏞️':'#e8f2eb','🍜':'#fef5e7','⛩️':'#f0ebf7','🌌':'#e0e8f0','🛕':'#fef6e8','🏯':'#fde8e8'};return map[icon]||'#f5f5f5';}
+
+// ===== 每日荐书 =====
+const bookLibrary=[
+  {title:'九诗心',author:'黄晓丹',emoji:'📖',rating:9.2,summary:'本书以九位中国古代诗人的生命历程为线索——从屈原的孤绝、陶渊明的归隐，到杜甫的沉郁、苏轼的旷达——深入剖析诗歌背后的人性光辉与精神力量。',reason:'在焦虑蔓延的时代，这本书像一剂温柔的解药。黄晓丹不是教你"如何成功"，而是带你回到诗歌的源头，感受那些穿越千年的情感共鸣。',category:'中国文学'},
+  {title:'格外的活法',author:'[日] 吉井忍',emoji:'📗',rating:8.9,summary:'日本作家吉井忍走访了东京街头那些选择"非主流"生活方式的人们——凌晨三点开店的豆腐匠、坚持手写菜单的咖啡馆老板、拒绝智能手机的旧书店主。',reason:'当你被KPI追着跑、被社交媒体的焦虑裹挟时，这本书会让你停下来思考：人生真的只有一种标准答案吗？',category:'外国文学'},
+  {title:'看不见的中东',author:'姚璐',emoji:'📙',rating:9.0,summary:'战地记者姚璐深入中东十年，用第一手观察记录了伊拉克、叙利亚、阿富汗等地普通人的日常生活。书中没有宏大的政治叙事，而是聚焦于战争阴影下的人们如何买菜、上学、恋爱、做梦。',reason:'姚璐的文字克制而有力量，读完你会重新理解"和平"二字的分量。这是2025年最震撼人心的非虚构作品之一。',category:'社会纪实'},
+  {title:'要有光',author:'梁鸿',emoji:'📘',rating:8.8,summary:'继《中国在梁庄》后，梁鸿再次回到故乡，用十年时间追踪记录一个普通中国村庄的变迁。从留守儿童到空巢老人，从土地流转到乡村教育。',reason:'在城市化狂飙突进的时代，梁鸿帮我们记住了"回不去的故乡"。文字朴实无华却直击人心，2025年最值得中国人阅读的纪实文学。',category:'社会纪实'},
+  {title:'哲学家的最后一课',author:'朱锐',emoji:'📓',rating:9.1,summary:'身患绝症的哲学家朱锐，在生命的最后一年里，将病床变成了讲台。他用哲学的方式面对死亡——不是悲壮的抗争，而是平静的对话。',reason:'这是一本用生命写成的书。朱锐教授教会我们的不是"如何成功"，而是"如何面对终结"。读完你不会感到沉重，反而会获得一种奇异的平静。',category:'哲学'},
+];
+function getTodayBook(){const now=new Date();const dayOfYear=Math.floor((now-new Date(now.getFullYear(),0,0))/(1000*60*60*24));return bookLibrary[dayOfYear%bookLibrary.length];}
+function renderBook(){
+  const book=getTodayBook();const now=new Date();const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  return `<div class="card" style="text-align:center"><span class="tag tag-warm" style="font-size:12px;padding:5px 14px">📅 ${dateStr} 今日推荐</span></div>
+    <div class="book-hero"><div class="book-cover-area"><div class="book-cover-emoji">${book.emoji}</div><div class="book-info"><div class="book-name">${book.title}</div><div class="book-author">✍️ ${book.author} <span class="tag tag-warm">${book.category}</span></div><div class="book-rating"><span class="book-stars">★★★★★</span><span class="book-score">${book.rating}</span><span style="font-size:11px;color:var(--text-light)">豆瓣评分</span></div></div></div></div>
+    <div class="card"><div class="book-section"><div class="book-section-title">📖 内容概括</div><div class="book-section-content">${book.summary}</div></div></div>
+    <div class="card"><div class="book-section"><div class="book-section-title">💚 推荐理由</div><div class="book-section-content">${book.reason}</div></div></div>
+    <div class="book-actions"><button class="btn btn-green" onclick="window.open('https://book.douban.com/subject_search?search_text=${encodeURIComponent(book.title)}','_blank')">📚 豆瓣查看详情</button><button class="btn btn-outline" onclick="switchBook(-1)">👈 上一本</button><button class="btn btn-outline" onclick="switchBook(1)">👉 下一本</button></div>
+    <div class="book-history"><div class="book-history-title">📚 书库一览（点击切换）</div>${bookLibrary.map((b,i)=>`<div class="book-mini" onclick="switchToBook(${i})"><span class="book-mini-emoji">${b.emoji}</span><div class="book-mini-info"><div class="book-mini-name">${b.title}</div><div class="book-mini-author">${b.author} · 豆瓣 ${b.rating}</div></div><span style="color:var(--text-light)">→</span></div>`).join('')}</div>`;
+}
+function switchBook(dir){const book=getTodayBook();const idx=bookLibrary.findIndex(b=>b.title===book.title);const newIdx=(idx+dir+bookLibrary.length)%bookLibrary.length;appData.currentBookIndex=newIdx;saveData(appData);renderPage('book');showToast(`已切换：${bookLibrary[newIdx].title}`);}
+function switchToBook(idx){appData.currentBookIndex=idx;saveData(appData);renderPage('book');showToast(`已切换：${bookLibrary[idx].title}`);}
+
+// ===== 英语学习 =====
+const engArticles={
+  beginner:[
+    {id:'b1',title:'The Rise of AI in Everyday Life',source:'BBC Learning English',wordCount:200,listenCount:0,
+      sentences:[
+        {en:'Artificial intelligence is changing how we live.',zh:'人工智能正在改变我们的生活方式。'},
+        {en:'From smartphones to smart homes, AI helps us every day.',zh:'从智能手机到智能家居，人工智能每天都在帮助我们。'},
+        {en:'But some people worry about privacy and jobs.',zh:'但有些人担心隐私和就业问题。'},
+        {en:'Experts say we need to find a balance between using new technology and protecting our rights.',zh:'专家表示，我们需要在使用新技术和保护权利之间找到平衡。'},
+      ],
+      vocab:[{word:'artificial intelligence',phonetic:'/ˌɑːrtɪˈfɪʃl ɪnˈtelɪdʒəns/',meaning:'人工智能',example:'Artificial intelligence is changing the world.'},{word:'privacy',phonetic:'/ˈpraɪvəsi/',meaning:'隐私',example:'We should protect our online privacy.'},{word:'balance',phonetic:'/ˈbæləns/',meaning:'平衡',example:'Work-life balance is important.'},{word:'protect',phonetic:'/prəˈtekt/',meaning:'保护',example:'We must protect the environment.'}]
+    },
+    {id:'b2',title:'Why Walking is Good for Your Brain',source:'BBC 6 Minute English',wordCount:220,listenCount:0,
+      sentences:[
+        {en:'Scientists have found that walking can make your brain work better.',zh:'科学家发现走路能让你的大脑更好地运作。'},
+        {en:'A short walk every day can improve your memory and creativity.',zh:'每天短距离散步可以改善你的记忆力和创造力。'},
+        {en:'You don\'t need to run or go to the gym.',zh:'你不需要跑步或去健身房。'},
+        {en:'Just a 20-minute walk can make a big difference.',zh:'只需20分钟的散步就能带来很大不同。'},
+      ],
+      vocab:[{word:'scientists',phonetic:'/ˈsaɪəntɪsts/',meaning:'科学家',example:'Scientists study the natural world.'},{word:'improve',phonetic:'/ɪmˈpruːv/',meaning:'改善、提高',example:'I want to improve my English.'},{word:'memory',phonetic:'/ˈmeməri/',meaning:'记忆力',example:'She has a good memory.'},{word:'creativity',phonetic:'/ˌkriːeɪˈtɪvəti/',meaning:'创造力',example:'Children have amazing creativity.'}]
+    },
+  ],
+  intermediate:[
+    {id:'i1',title:'Climate Change: What Can We Actually Do?',source:'BBC News Review',wordCount:350,listenCount:0,
+      sentences:[
+        {en:'As global temperatures continue to rise, many people feel overwhelmed.',zh:'随着全球气温持续上升，许多人感到不知所措。'},
+        {en:'However, experts argue that individual actions, when combined, can create significant impact.',zh:'然而，专家认为，当个人行动汇聚在一起时，可以产生重大影响。'},
+        {en:'From reducing food waste to choosing renewable energy, small changes at home can contribute to a larger solution.',zh:'从减少食物浪费到选择可再生能源，家里的小改变都能为更大的解决方案做出贡献。'},
+        {en:'The key is consistency rather than perfection.',zh:'关键在于持之以恒，而非追求完美。'},
+      ],
+      vocab:[{word:'overwhelmed',phonetic:'/ˌoʊvərˈwelmd/',meaning:'不知所措的',example:'I felt overwhelmed by the workload.'},{word:'significant',phonetic:'/sɪɡˈnɪfɪkənt/',meaning:'显著的、重要的',example:'There was a significant improvement.'},{word:'renewable energy',phonetic:'/rɪˈnuːəbl ˈenərdʒi/',meaning:'可再生能源',example:'Solar power is a form of renewable energy.'},{word:'consistency',phonetic:'/kənˈsɪstənsi/',meaning:'持续性、一致性',example:'Consistency is key to success.'}]
+    },
+    {id:'i2',title:'The Four-Day Work Week Experiment',source:'BBC Worklife',wordCount:380,listenCount:0,
+      sentences:[
+        {en:'Companies around the world are testing a four-day work week.',zh:'世界各地的公司正在测试四天工作制。'},
+        {en:'The results have been surprisingly positive: employees report better mental health and higher productivity.',zh:'结果出奇地积极：员工报告说心理健康状况更好，生产力更高。'},
+        {en:'However, critics worry about the economic impact.',zh:'然而，批评者担心经济影响。'},
+        {en:'Is this the future of work or just a passing trend?',zh:'这是工作的未来，还是只是一个短暂的趋势？'},
+      ],
+      vocab:[{word:'experiment',phonetic:'/ɪkˈsperɪmənt/',meaning:'实验、尝试',example:'The company is running an experiment.'},{word:'productivity',phonetic:'/ˌprɑːdʌkˈtɪvəti/',meaning:'生产力、效率',example:'Productivity has increased this quarter.'},{word:'economic impact',phonetic:'/ˌiːkəˈnɑːmɪk ˈɪmpækt/',meaning:'经济影响',example:'The policy had a major economic impact.'},{word:'trend',phonetic:'/trend/',meaning:'趋势、潮流',example:'Remote work is a growing trend.'}]
+    },
+  ],
+  advanced:[
+    {id:'a1',title:'The Geopolitics of Technology: A New Cold War?',source:'BBC World Service',wordCount:500,listenCount:0,
+      sentences:[
+        {en:'The intensifying rivalry between the United States and China over semiconductor technology has profound implications for global trade.',zh:'中美两国在半导体技术领域日益激烈的竞争对全球贸易产生了深远影响。'},
+        {en:'National security and the future of innovation are at stake.',zh:'国家安全和创新的未来岌岌可危。'},
+        {en:'Analysts suggest we are witnessing the emergence of a "tech Cold War".',zh:'分析人士认为，我们正在见证一场"科技冷战"的出现。'},
+        {en:'This could reshape international relations for decades to come.',zh:'这可能会在未来几十年重塑国际关系。'},
+      ],
+      vocab:[{word:'geopolitics',phonetic:'/ˌdʒiːoʊˈpɑːlətɪks/',meaning:'地缘政治',example:'Geopolitics affects global markets.'},{word:'semiconductor',phonetic:'/ˌsemikənˈdʌktər/',meaning:'半导体',example:'Semiconductors are essential for electronics.'},{word:'profound implications',phonetic:'/prəˈfaʊnd ˌɪmplɪˈkeɪʃənz/',meaning:'深远的影响',example:'The decision has profound implications.'},{word:'international relations',phonetic:'/ˌɪntərˈnæʃənl rɪˈleɪʃənz/',meaning:'国际关系',example:'She studies international relations.'}]
+    },
+    {id:'a2',title:'How Misinformation Spreads Faster Than Truth',source:'BBC Future',wordCount:480,listenCount:0,
+      sentences:[
+        {en:'A groundbreaking MIT study reveals that false information on social media travels six times faster than accurate news.',zh:'麻省理工学院一项开创性的研究揭示，社交媒体上的虚假信息传播速度是准确新闻的六倍。'},
+        {en:'The research attributes this phenomenon to the emotional nature of fake news.',zh:'研究将这一现象归因于假新闻的情感性质。'},
+        {en:'Fake news triggers stronger reactions in readers.',zh:'假新闻在读者中引发更强烈的反应。'},
+        {en:'Understanding the mechanics of misinformation is crucial for developing effective countermeasures.',zh:'理解虚假信息的运作机制对于制定有效的对策至关重要。'},
+      ],
+      vocab:[{word:'misinformation',phonetic:'/ˌmɪsɪnfərˈmeɪʃn/',meaning:'错误信息、虚假信息',example:'Social media is full of misinformation.'},{word:'groundbreaking',phonetic:'/ˈɡraʊndbreɪkɪŋ/',meaning:'开创性的',example:'The study was groundbreaking.'},{word:'phenomenon',phonetic:'/fəˈnɑːmɪnɑːn/',meaning:'现象',example:'Climate change is a global phenomenon.'},{word:'countermeasures',phonetic:'/ˈkaʊntərmeʒərz/',meaning:'对策、应对措施',example:'The government took countermeasures.'}]
+    },
+  ],
+};
+
+// 背单词数据
+const vocabData={
+  beginner:[
+    {word:'apple',phonetic:'/ˈæpl/',meaning:'苹果',example:'I eat an apple every day.'},
+    {word:'happy',phonetic:'/ˈhæpi/',meaning:'开心的',example:'She is very happy today.'},
+    {word:'water',phonetic:'/ˈwɔːtər/',meaning:'水',example:'Please drink more water.'},
+    {word:'friend',phonetic:'/frend/',meaning:'朋友',example:'He is my best friend.'},
+    {word:'book',phonetic:'/bʊk/',meaning:'书',example:'I love reading books.'},
+    {word:'school',phonetic:'/skuːl/',meaning:'学校',example:'I go to school by bus.'},
+    {word:'family',phonetic:'/ˈfæməli/',meaning:'家庭',example:'My family is very important to me.'},
+    {word:'time',phonetic:'/taɪm/',meaning:'时间',example:'Time flies when you\'re having fun.'},
+  ],
+  intermediate:[
+    {word:'challenge',phonetic:'/ˈtʃælɪndʒ/',meaning:'挑战',example:'Learning a new language is a challenge.'},
+    {word:'opportunity',phonetic:'/ˌɑːpərˈtuːnəti/',meaning:'机会',example:'This is a great opportunity.'},
+    {word:'environment',phonetic:'/ɪnˈvaɪrənmənt/',meaning:'环境',example:'We must protect the environment.'},
+    {word:'experience',phonetic:'/ɪkˈspɪriəns/',meaning:'经验、经历',example:'She has a lot of work experience.'},
+    {word:'communication',phonetic:'/kəˌmjuːnɪˈkeɪʃn/',meaning:'沟通',example:'Good communication is essential.'},
+    {word:'technology',phonetic:'/tekˈnɑːlədʒi/',meaning:'科技',example:'Technology is changing our lives.'},
+    {word:'development',phonetic:'/dɪˈveləpmənt/',meaning:'发展',example:'The city is undergoing rapid development.'},
+    {word:'responsibility',phonetic:'/rɪˌspɑːnsəˈbɪləti/',meaning:'责任',example:'It is your responsibility to finish this.'},
+  ],
+  advanced:[
+    {word:'sophisticated',phonetic:'/səˈfɪstɪkeɪtɪd/',meaning:'复杂的、精密的',example:'The system is highly sophisticated.'},
+    {word:'controversial',phonetic:'/ˌkɑːntrəˈvɜːrʃl/',meaning:'有争议的',example:'This is a controversial topic.'},
+    {word:'paradigm',phonetic:'/ˈpærədaɪm/',meaning:'范式、典范',example:'The discovery created a new paradigm.'},
+    {word:'unprecedented',phonetic:'/ʌnˈpresɪdentɪd/',meaning:'前所未有的',example:'We face unprecedented challenges.'},
+    {word:'infrastructure',phonetic:'/ˈɪnfrəstrʌktʃər/',meaning:'基础设施',example:'The country needs better infrastructure.'},
+    {word:'sustainability',phonetic:'/səˌsteɪnəˈbɪləti/',meaning:'可持续性',example:'Sustainability is key to our future.'},
+    {word:'collaboration',phonetic:'/kəˌlæbəˈreɪʃn/',meaning:'合作',example:'The project requires close collaboration.'},
+    {word:'entrepreneurship',phonetic:'/ˌɑːntrəprəˈnɜːrʃɪp/',meaning:'创业精神',example:'Entrepreneurship drives innovation.'},
+  ],
+};
+
+// 小短文数据
+const shortPassages={
+  beginner:[
+    {title:'My Morning Routine',text:'Every morning, I wake up at 7 o\'clock. I brush my teeth and wash my face. Then I eat breakfast with my family. I usually have bread and milk. After breakfast, I go to work by subway. I arrive at the office at 9 o\'clock. My workday starts with checking emails and making a to-do list.',words:['routine','brush','subway','office','email']},
+    {title:'A Day at the Park',text:'Last Sunday, I went to the park with my friends. The weather was sunny and warm. We brought some food and drinks. We sat on the grass and talked for hours. In the afternoon, we played frisbee and took many photos. It was a wonderful day. I felt relaxed and happy.',words:['sunny','grass','frisbee','relaxed','wonderful']},
+  ],
+  intermediate:[
+    {title:'The Power of Habits',text:'Habits shape our lives more than we realize. Small daily actions, when repeated consistently, create powerful results. Reading for 30 minutes every day may seem insignificant, but over a year, you will have read dozens of books. The key is to start small and stay consistent. Remember: progress, not perfection.',words:['habits','consistent','insignificant','progress','perfection']},
+    {title:'Digital Detox',text:'In our hyper-connected world, taking a break from screens has become essential for mental health. A digital detox means intentionally disconnecting from devices for a period of time. Many people report feeling less anxious and more present after just one day without their phone. Start with small steps: no phones during meals, or an hour before bed.',words:['hyper-connected','intentionally','anxious','present','essential']},
+  ],
+  advanced:[
+    {title:'The Paradox of Choice',text:'In modern consumer society, we are presented with an overwhelming number of choices every day. From breakfast cereals to career paths, the abundance of options was supposed to make us happier. Yet research shows that too many choices often lead to decision paralysis and decreased satisfaction. The solution may lie in embracing constraints and learning to be content with "good enough" rather than constantly seeking the optimal choice.',words:['paradox','overwhelming','paralysis','constraints','optimal']},
+    {title:'The Attention Economy',text:'In the digital age, attention has become the most valuable currency. Tech companies compete fiercely for every second of our focus, employing sophisticated psychological techniques to keep us engaged. The cost is borne by our cognitive resources, relationships, and mental well-being. Reclaiming our attention requires conscious effort: setting boundaries, curating information sources, and practicing deep work in an increasingly shallow world.',words:['currency','sophisticated','cognitive','curating','conscious']},
+  ],
+};
+
+let currentArticle=null;
+let readerMode='both';
+
+function renderEnglish(){
+  const subTab=appData.engSubTab||'articles';
+  let html=`<div class="card"><div class="card-header"><span class="card-title">🌍 英语学习</span><span style="font-size:12px;color:var(--text-light)">每天30分钟盲听练习</span></div>
+    <div class="eng-level-tabs">
+      <button class="eng-tab${subTab==='articles'?' active':''}" onclick="switchEngSubTab('articles')">📰 文章阅读</button>
+      <button class="eng-tab${subTab==='vocab'?' active':''}" onclick="switchEngSubTab('vocab')">📝 背单词</button>
+      <button class="eng-tab${subTab==='passages'?' active':''}" onclick="switchEngSubTab('passages')">📖 小短文</button>
+    </div>
+  </div>`;
+
+  if(subTab==='articles'){
+    const level=appData.engLevel||'intermediate';
+    const articles=engArticles[level]||engArticles.intermediate;
+    html+=`<div class="card"><div style="display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <button class="eng-tab${level==='beginner'?' active':''}" onclick="switchEngLevel('beginner')">🌱 初级</button>
+      <button class="eng-tab${level==='intermediate'?' active':''}" onclick="switchEngLevel('intermediate')">🌿 中级</button>
+      <button class="eng-tab${level==='advanced'?' active':''}" onclick="switchEngLevel('advanced')">🌳 高级</button>
+    </div><p style="font-size:12px;color:var(--text-light)">💡 点击文章进入阅读模式，可切换译文、逐句朗读、做单词训练</p></div>`;
+    articles.forEach(a=>{
+      html+=`<div class="eng-article-card" onclick="openReader('${a.id}')">
+        <div class="eng-article-header"><span class="eng-source-badge">${a.source}</span><span style="font-size:11px;color:var(--text-light)">${a.wordCount} 词</span></div>
+        <div class="eng-article-title">${a.title}</div>
+        <div class="eng-article-preview">${a.sentences[0].en.slice(0,80)}...</div>
+        <div class="eng-article-meta"><span>🎧 已听 ${a.listenCount} 次</span><span>📖 ${a.sentences.length} 句</span><span>📝 ${a.vocab.length} 词</span></div>
+      </div>`;
+    });
+    html+=`<div class="card" style="text-align:center"><p style="font-size:12px;color:var(--text-light);margin-bottom:8px">📻 内容参考：<a href="https://www.bbc.co.uk/learningenglish/" target="_blank" rel="noopener" style="color:var(--green)">BBC Learning English</a></p></div>`;
+  }else if(subTab==='vocab'){
+    const level=appData.engLevel||'intermediate';
+    const words=vocabData[level]||vocabData.intermediate;
+    html+=`<div class="card"><div style="display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <button class="eng-tab${level==='beginner'?' active':''}" onclick="switchEngLevel('beginner')">🌱 初级</button>
+      <button class="eng-tab${level==='intermediate'?' active':''}" onclick="switchEngLevel('intermediate')">🌿 中级</button>
+      <button class="eng-tab${level==='advanced'?' active':''}" onclick="switchEngLevel('advanced')">🌳 高级</button>
+    </div><p style="font-size:12px;color:var(--text-light)">💡 点击单词查看发音和例句，点击"开始练习"进入单词训练</p></div>`;
+    html+=`<div class="vocab-grid">${words.map((w,i)=>`<div class="vocab-card" onclick="showVocabDetail(${i})"><div class="vocab-word">${w.word}</div><div class="vocab-phonetic">${w.phonetic}</div><div class="vocab-meaning">${w.meaning}</div></div>`).join('')}</div>`;
+    html+=`<button class="btn btn-green btn-block" style="margin-top:12px" onclick="startVocabPractice()">📝 开始单词练习</button>`;
+  }else if(subTab==='passages'){
+    const level=appData.engLevel||'intermediate';
+    const passages=shortPassages[level]||shortPassages.intermediate;
+    html+=`<div class="card"><div style="display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <button class="eng-tab${level==='beginner'?' active':''}" onclick="switchEngLevel('beginner')">🌱 初级</button>
+      <button class="eng-tab${level==='intermediate'?' active':''}" onclick="switchEngLevel('intermediate')">🌿 中级</button>
+      <button class="eng-tab${level==='advanced'?' active':''}" onclick="switchEngLevel('advanced')">🌳 高级</button>
+    </div><p style="font-size:12px;color:var(--text-light)">💡 小短文适合朗读和背诵练习</p></div>`;
+    passages.forEach(p=>{
+      html+=`<div class="vocab-short-card"><div class="vocab-short-title">📖 ${p.title}</div><div class="vocab-short-text">${p.text}</div><div class="vocab-short-words">${p.words.map(w=>`<span class="tag tag-green">${w}</span>`).join('')}</div></div>`;
+    });
+  }
+  return html;
+}
+
+function switchEngSubTab(tab){appData.engSubTab=tab;saveData(appData);renderPage('english');}
+function switchEngLevel(level){appData.engLevel=level;saveData(appData);renderPage('english');showToast(`已切换至${level==='beginner'?'初级':level==='intermediate'?'中级':'高级'}水平`);}
+
+function showVocabDetail(idx){
+  const level=appData.engLevel||'intermediate';
+  const words=vocabData[level]||vocabData.intermediate;
+  const w=words[idx];
+  showToast(`${w.word} ${w.phonetic} — ${w.meaning}`);
+}
+
+// ===== 阅读器 =====
+function openReader(articleId){
+  const level=appData.engLevel||'intermediate';
+  const articles=engArticles[level]||engArticles.intermediate;
+  currentArticle=articles.find(a=>a.id===articleId);
+  if(!currentArticle)return;
+  currentArticle.listenCount=(currentArticle.listenCount||0)+1;
+  saveData(appData);
+  readerMode=appData.readerMode||'both';
+  updateReaderModeTabs();
+  renderReaderBody();
+  document.getElementById('readerOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function closeReader(){
+  document.getElementById('readerOverlay').classList.remove('active');
+  document.body.style.overflow='';
+  closePlaybar();
+}
+
+function setReaderMode(mode){
+  readerMode=mode;appData.readerMode=mode;saveData(appData);
+  updateReaderModeTabs();renderReaderBody();
+}
+
+function updateReaderModeTabs(){
+  ['modeEn','modeZh','modeBoth'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  const map={en:'modeEn',zh:'modeZh',both:'modeBoth'};
+  document.getElementById(map[readerMode]).classList.add('active');
+}
+
+function renderReaderBody(){
+  if(!currentArticle)return;
+  let html=`<div class="reader-article-title">${currentArticle.title}</div><div class="reader-article-source">📻 ${currentArticle.source} · ${currentArticle.wordCount} 词 · 已听 ${currentArticle.listenCount} 次</div>`;
+  currentArticle.sentences.forEach((s,i)=>{
+    html+=`<div class="reader-sentence" onclick="playSentence(${i})">`;
+    if(readerMode==='en'||readerMode==='both'){
+      html+=`<div class="reader-sentence-en">${highlightVocab(s.en,currentArticle.vocab)}</div>`;
+    }
+    if(readerMode==='zh'||readerMode==='both'){
+      html+=`<div class="reader-sentence-zh">${s.zh}</div>`;
+    }
+    html+=`</div>`;
+  });
+  document.getElementById('readerBody').innerHTML=html;
+}
+
+function highlightVocab(text,vocab){
+  let result=text;
+  vocab.forEach(v=>{
+    const regex=new RegExp('\\b'+v.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','gi');
+    result=result.replace(regex,`<span class="word-tag" onclick="event.stopPropagation();showToast('${v.word}: ${v.meaning}')">$&</span>`);
+  });
+  return result;
+}
+
+// ===== 播放器 =====
+let playInterval=null;
+let currentSentenceIdx=0;
+
+function playSentence(idx){
+  if(!currentArticle)return;
+  currentSentenceIdx=idx;
+  appData.playSentence=idx;saveData(appData);
+  const s=currentArticle.sentences[idx];
+  document.getElementById('playbarTitle').textContent=currentArticle.title;
+  document.getElementById('playbarSentence').textContent=`第 ${idx+1}/${currentArticle.sentences.length} 句`;
+  document.getElementById('playbarProgress').style.width=`${((idx+1)/currentArticle.sentences.length)*100}%`;
+  document.getElementById('playbar').classList.add('active');
+  // 使用Web Speech API朗读
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utter=new SpeechSynthesisUtterance(s.en);
+    utter.lang='en-US';
+    utter.rate=appData.playSpeed||1.0;
+    utter.onend=()=>{document.getElementById('playPauseBtn').textContent='▶';appData.playPlaying=false;saveData(appData);};
+    window.speechSynthesis.speak(utter);
+    document.getElementById('playPauseBtn').textContent='⏸';
+    appData.playPlaying=true;saveData(appData);
+  }else{
+    showToast('您的浏览器不支持语音朗读');
+  }
+}
+
+function togglePlay(){
+  if(!currentArticle)return;
+  if(appData.playPlaying){
+    window.speechSynthesis.pause();
+    document.getElementById('playPauseBtn').textContent='▶';
+    appData.playPlaying=false;saveData(appData);
+  }else{
+    if(window.speechSynthesis.paused){window.speechSynthesis.resume();}
+    else{playSentence(currentSentenceIdx);}
+    document.getElementById('playPauseBtn').textContent='⏸';
+    appData.playPlaying=true;saveData(appData);
+  }
+}
+
+function prevSentence(){if(!currentArticle||currentSentenceIdx<=0)return;playSentence(currentSentenceIdx-1);}
+function nextSentence(){if(!currentArticle||currentSentenceIdx>=currentArticle.sentences.length-1)return;playSentence(currentSentenceIdx+1);}
+
+function toggleSpeed(){
+  const speeds=[0.5,0.75,1.0,1.25,1.5];
+  const current=appData.playSpeed||1.0;
+  const idx=speeds.indexOf(current);
+  const next=speeds[(idx+1)%speeds.length];
+  appData.playSpeed=next;saveData(appData);
+  document.getElementById('speedBtn').textContent=next+'x';
+  showToast(`语速已调至 ${next}x`);
+}
+
+function closePlaybar(){
+  document.getElementById('playbar').classList.remove('active');
+  if('speechSynthesis' in window)window.speechSynthesis.cancel();
+  appData.playPlaying=false;saveData(appData);
+}
+
+// ===== 单词训练 =====
+let trainWords=[];
+let trainIdx=0;
+let trainCorrect=0;
+
+function openWordTrain(){
+  if(!currentArticle)return;
+  trainWords=shuffleArray([...currentArticle.vocab]);
+  trainIdx=0;trainCorrect=0;
+  renderWordTrain();
+  document.getElementById('wordTrainOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function closeWordTrain(){
+  document.getElementById('wordTrainOverlay').classList.remove('active');
+  document.body.style.overflow='';
+}
+
+function startVocabPractice(){
+  const level=appData.engLevel||'intermediate';
+  const words=vocabData[level]||vocabData.intermediate;
+  trainWords=shuffleArray([...words]);
+  trainIdx=0;trainCorrect=0;
+  renderWordTrain();
+  document.getElementById('wordTrainOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function renderWordTrain(){
+  const body=document.getElementById('wordTrainBody');
+  if(trainIdx>=trainWords.length){
+    body.innerHTML=`<div class="card" style="text-align:center;padding:40px 20px"><div style="font-size:48px;margin-bottom:16px">🎉</div><div style="font-size:20px;font-weight:700;margin-bottom:8px">练习完成！</div><div style="font-size:14px;color:var(--text-light)">答对 ${trainCorrect}/${trainWords.length} 题</div><button class="btn btn-green btn-block" style="margin-top:20px" onclick="closeWordTrain()">完成</button></div>`;
+    return;
+  }
+  const w=trainWords[trainIdx];
+  const progress=((trainIdx)/trainWords.length)*100;
+  // 生成选项（1正确+3干扰）
+  const allMeanings=trainWords.map(x=>x.meaning);
+  const wrongOptions=shuffleArray(allMeanings.filter(m=>m!==w.meaning)).slice(0,3);
+  const options=shuffleArray([w.meaning,...wrongOptions]);
+
+  let html=`<div class="word-progress"><div class="word-progress-bar"><div class="word-progress-fill" style="width:${progress}%"></div></div><span class="word-progress-text">${trainIdx+1}/${trainWords.length}</span></div>`;
+  html+=`<div class="word-card"><div class="word-card-word">${w.word}</div><div class="word-card-phonetic">${w.phonetic}</div><div class="word-card-example">"${w.example}"</div></div>`;
+  html+=`<div class="word-options">${options.map((opt,i)=>`<button class="word-option" id="opt${i}" onclick="checkAnswer(${i},'${opt.replace(/'/g,"\\'")}','${w.meaning.replace(/'/g,"\\'")}')">${opt}</button>`).join('')}</div>`;
+  body.innerHTML=html;
+}
+
+function checkAnswer(idx,selected,correct){
+  const btn=document.getElementById('opt'+idx);
+  if(selected===correct){btn.classList.add('correct');trainCorrect++;showToast('✓ 正确！');}
+  else{btn.classList.add('wrong');showToast('✗ 正确答案是：'+correct);}
+  setTimeout(()=>{trainIdx++;renderWordTrain();},1200);
+}
+
+function shuffleArray(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ===== 打卡 =====
+function renderCheckin(){
+  const now=new Date();const year=now.getFullYear();const month=now.getMonth();const today=now.getDate();
+  const daysInMonth=new Date(year,month+1,0).getDate();const firstDay=new Date(year,month,1).getDay();
+  const checkinCount=Object.keys(appData.checkins).length;const streak=calcStreak();
+  return `<div class="checkin-streak"><div class="streak-num">🔥 ${streak}</div><div class="streak-text">连续打卡天数<br><span style="font-size:12px;color:var(--text-light)">累计 ${checkinCount} 天</span></div></div>
+    <div class="card"><div class="card-header"><span class="card-title">📅 ${year}年${month+1}月</span><button class="btn btn-sm btn-green" onclick="doCheckin()">✅ 今日打卡</button></div>
+    <div class="checkin-calendar">${['日','一','二','三','四','五','六'].map(d=>`<div class="cal-day-header">${d}</div>`).join('')}${Array.from({length:firstDay},()=>'<div class="cal-day empty"></div>').join('')}${Array.from({length:daysInMonth},(_,i)=>{const d=i+1;const key=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const checked=appData.checkins[key];const isToday=d===today;return `<div class="cal-day${checked?' checked':''}${isToday?' today':''}" onclick="toggleCheckinDay('${key}')">${d}</div>`;}).join('')}</div></div>`;
+}
+function calcStreak(){let streak=0;const now=new Date();for(let i=0;i<365;i++){const d=new Date(now);d.setDate(d.getDate()-i);const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if(appData.checkins[key]){streak++;}else{break;}}return streak;}
+function doCheckin(){const now=new Date();const key=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;if(appData.checkins[key]){showToast('今天已经打过卡啦 ✨');return;}appData.checkins[key]=true;saveData(appData);renderPage('checkin');showToast('打卡成功！🔥');}
+function toggleCheckinDay(key){if(appData.checkins[key]){delete appData.checkins[key];}else{appData.checkins[key]=true;}saveData(appData);renderPage('checkin');}
+
+// ========== 工具 ==========
+function escapeHTML(str){const div=document.createElement('div');div.textContent=str;return div.innerHTML;}
+
+// ========== 初始化 ==========
+function init(){buildSidebar();renderPage('home');}
+init();
+</script>
+</body>
+</html>
