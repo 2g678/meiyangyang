@@ -332,6 +332,76 @@ textarea.input { resize:vertical; min-height:70px; }
 .recipe-result-meta span { display:flex; align-items:center; gap:3px; }
 .recipe-empty { text-align:center; padding:30px 16px; color:var(--text-light); }
 
+/* 资产记账 */
+.asset-summary { background:linear-gradient(135deg,var(--green),var(--mint)); color:#fff;
+  border-radius:var(--radius); padding:18px 16px; margin-bottom:12px; box-shadow:0 4px 14px rgba(45,125,79,.22); }
+.asset-summary-label { font-size:12px; opacity:.85; }
+.asset-summary-amount { font-size:30px; font-weight:700; margin:4px 0; letter-spacing:-.5px; }
+.asset-summary-sub { display:flex; gap:18px; font-size:12px; opacity:.9; margin-top:6px; }
+.asset-summary-sub .up { color:#c8f7d4; }
+.asset-summary-sub .down { color:#ffd6d6; }
+.asset-tabs { display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; padding-bottom:2px; }
+.asset-tab { padding:7px 14px; border-radius:18px; font-size:13px; white-space:nowrap; cursor:pointer;
+  background:#fff; border:1.5px solid var(--border); color:var(--text-mid); transition:all .15s; }
+.asset-tab.active { background:var(--green); color:#fff; border-color:var(--green); }
+.asset-acct-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  border:1px solid var(--border); box-shadow:var(--shadow); position:relative; }
+.asset-acct-top { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.asset-acct-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; flex-shrink:0; }
+.asset-acct-icon.alipay { background:#1677ff; color:#fff; }
+.asset-acct-icon.wechat { background:#07c160; color:#fff; }
+.asset-acct-icon.bank { background:#d4380d; color:#fff; }
+.asset-acct-icon.fund { background:#722ed1; color:#fff; }
+.asset-acct-icon.debt { background:#8c8c8c; color:#fff; }
+.asset-acct-icon.cash { background:#faad14; color:#fff; }
+.asset-acct-icon.other { background:var(--green); color:#fff; }
+.asset-acct-info { flex:1; min-width:0; }
+.asset-acct-name { font-size:15px; font-weight:600; }
+.asset-acct-type { font-size:11px; color:var(--text-light); }
+.asset-acct-amount { font-size:18px; font-weight:700; text-align:right; }
+.asset-acct-amount.debt { color:var(--danger); }
+.asset-acct-actions { display:flex; gap:8px; margin-top:10px; }
+.asset-acct-actions .btn { flex:1; padding:6px; font-size:12px; }
+.asset-tx-card { background:var(--card); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:8px;
+  border:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.asset-tx-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  font-size:15px; flex-shrink:0; }
+.asset-tx-icon.income { background:var(--green-light); color:var(--green); }
+.asset-tx-icon.expense { background:#fff0f0; color:var(--danger); }
+.asset-tx-info { flex:1; min-width:0; }
+.asset-tx-desc { font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.asset-tx-meta { font-size:11px; color:var(--text-light); }
+.asset-tx-amount { font-weight:600; font-size:15px; }
+.asset-tx-amount.income { color:var(--green); }
+.asset-tx-amount.expense { color:var(--danger); }
+.asset-modal { position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.4); display:flex; align-items:flex-end;
+  justify-content:center; opacity:0; visibility:hidden; transition:.25s; }
+.asset-modal.open { opacity:1; visibility:visible; }
+.asset-modal-box { background:#fff; border-radius:18px 18px 0 0; width:100%; max-width:500px; padding:18px 16px 24px;
+  max-height:85vh; overflow-y:auto; transform:translateY(20px); transition:.25s; }
+.asset-modal.open .asset-modal-box { transform:translateY(0); }
+.asset-modal-title { font-size:16px; font-weight:600; text-align:center; margin-bottom:14px; }
+.asset-field { margin-bottom:12px; }
+.asset-field-label { font-size:12px; color:var(--text-light); margin-bottom:5px; }
+.asset-type-grid { display:flex; flex-wrap:wrap; gap:6px; }
+.asset-type-opt { padding:6px 12px; border-radius:16px; font-size:12px; border:1.5px solid var(--border);
+  cursor:pointer; background:#fff; }
+.asset-type-opt.active { background:var(--green); color:#fff; border-color:var(--green); }
+.asset-cat-row { display:flex; gap:6px; flex-wrap:wrap; }
+.asset-cat-opt { padding:5px 11px; border-radius:14px; font-size:12px; border:1.5px solid var(--border);
+  cursor:pointer; background:#fff; }
+.asset-cat-opt.active { background:var(--green-light); color:var(--green-dark); border-color:var(--green); }
+.asset-empty { text-align:center; padding:30px 16px; color:var(--text-light); }
+.asset-chart { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:12px;
+  border:1px solid var(--border); box-shadow:var(--shadow); }
+.asset-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px; }
+.asset-bar-label { width:60px; color:var(--text-mid); flex-shrink:0; }
+.asset-bar-track { flex:1; height:22px; background:var(--green-light); border-radius:6px; overflow:hidden; position:relative; }
+.asset-bar-fill { height:100%; background:linear-gradient(90deg,var(--green),var(--mint)); border-radius:6px; transition:width .4s; }
+.asset-bar-val { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:600; color:#fff; }
+.asset-bar-val.dark { color:var(--text); }
+
 /* 打卡 */
 .checkin-calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
 .cal-day-header { text-align:center; font-size:11px; color:var(--text-light); padding:4px 0; }
@@ -426,7 +496,7 @@ const navItems=[
   {id:'inspire',label:'灵感每日推送',icon:'💡'},{id:'meme',label:'热梗追踪',icon:'🔥',badge:'HOT'},
   {id:'travel',label:'旅游攻略',icon:'✈️'},{id:'book',label:'每日荐书',icon:'📚'},
   {id:'english',label:'英语学习',icon:'🌍'},{id:'recipe',label:'食材找食谱',icon:'🍳'},
-  {id:'checkin',label:'打卡记录',icon:'✅'},
+  {id:'asset',label:'资产记账',icon:'💰'},{id:'checkin',label:'打卡记录',icon:'✅'},
 ];
 let currentPage='home';
 
@@ -453,6 +523,7 @@ function renderPage(pageId){
     case 'book':main.innerHTML=renderBook();break;
     case 'english':main.innerHTML=renderEnglish();break;
     case 'recipe':main.innerHTML=renderRecipe();break;
+    case 'asset':main.innerHTML=renderAsset();break;
     case 'checkin':main.innerHTML=renderCheckin();break;
     default:main.innerHTML=renderHome();
   }
@@ -1144,6 +1215,316 @@ function toggleRecipeSteps(name){
   const el=document.getElementById('steps_'+name);
   if(el)el.style.display=el.style.display==='none'?'block':'none';
 }
+
+// ===== 资产记账 =====
+const ASSET_TYPES=[
+  {id:'alipay',label:'支付宝',icon:'💰',cls:'alipay'},
+  {id:'wechat',label:'微信钱包',icon:'💚',cls:'wechat'},
+  {id:'bank',label:'银行卡',icon:'🏦',cls:'bank'},
+  {id:'fund',label:'理财/基金',icon:'📈',cls:'fund'},
+  {id:'debt',label:'负债(花呗/借呗)',icon:'💳',cls:'debt'},
+  {id:'cash',label:'现金',icon:'💵',cls:'cash'},
+  {id:'other',label:'其他',icon:'📦',cls:'other'},
+];
+const TX_CATEGORIES={
+  income:['工资','兼职','理财收益','红包','退款','其他收入'],
+  expense:['餐饮','交通','购物','娱乐','居家','医疗','教育','人情','其他支出'],
+};
+function getAssetData(){
+  if(!appData.asset)appData.asset={accounts:[],transactions:[]};
+  return appData.asset;
+}
+function formatMoney(n){
+  n=Number(n)||0;
+  return n.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function calcTotalAsset(){
+  const a=getAssetData();
+  let total=0;
+  a.accounts.forEach(ac=>{
+    if(ac.type==='debt')total-=Number(ac.balance)||0;
+    else total+=Number(ac.balance)||0;
+  });
+  return total;
+}
+function calcNetAsset(){
+  const a=getAssetData();
+  let asset=0,debt=0;
+  a.accounts.forEach(ac=>{
+    if(ac.type==='debt')debt+=Number(ac.balance)||0;
+    else asset+=Number(ac.balance)||0;
+  });
+  return {asset,debt,net:asset-debt};
+}
+function calcMonthTx(){
+  const a=getAssetData();const now=new Date();const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  let income=0,expense=0;
+  a.transactions.forEach(t=>{
+    if(t.date&&t.date.startsWith(ym)){
+      if(t.type==='income')income+=Number(t.amount)||0;
+      else expense+=Number(t.amount)||0;
+    }
+  });
+  return {income,expense};
+}
+function renderAsset(){
+  const a=getAssetData();
+  const net=calcNetAsset();
+  const month=calcMonthTx();
+  const tab=appData.assetTab||'overview';
+  let html=`<div class="asset-summary">
+    <div class="asset-summary-label">💰 净资产合计</div>
+    <div class="asset-summary-amount">¥ ${formatMoney(net.net)}</div>
+    <div class="asset-summary-sub">
+      <span>资产 ¥${formatMoney(net.asset)}</span>
+      <span>负债 ¥${formatMoney(net.debt)}</span>
+      <span class="${month.income-month.expense>=0?'up':'down'}">本月 ${month.income-month.expense>=0?'+':''}¥${formatMoney(month.income-month.expense)}</span>
+    </div>
+  </div>`;
+  html+=`<div class="asset-tabs">
+    <span class="asset-tab ${tab==='overview'?'active':''}" onclick="switchAssetTab('overview')">📊 概览</span>
+    <span class="asset-tab ${tab==='accounts'?'active':''}" onclick="switchAssetTab('accounts')">💳 账户</span>
+    <span class="asset-tab ${tab==='tx'?'active':''}" onclick="switchAssetTab('tx')">📝 流水</span>
+    <span class="asset-tab ${tab==='stats'?'active':''}" onclick="switchAssetTab('stats')">📈 统计</span>
+  </div>`;
+  if(tab==='overview'){
+    if(a.accounts.length===0){
+      html+=`<div class="asset-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">💰</div>
+        <div style="font-size:13px;margin-bottom:14px">还没有账户，先添加你的第一个账户吧</div>
+        <button class="btn btn-green" onclick="openAcctModal()">+ 添加账户</button></div>`;
+    }else{
+      html+=`<div class="card"><span class="card-sub">账户分布（${a.accounts.length}个账户）</span></div>`;
+      html+=`<div class="asset-chart">`;
+      const maxBal=Math.max(...a.accounts.map(ac=>Math.abs(Number(ac.balance)||0)),1);
+      a.accounts.forEach(ac=>{
+        const t=ASSET_TYPES.find(x=>x.id===ac.type)||ASSET_TYPES[6];
+        const pct=Math.round((Math.abs(Number(ac.balance)||0)/maxBal)*100);
+        const isDebt=ac.type==='debt';
+        html+=`<div class="asset-bar-row">
+          <div class="asset-bar-label">${t.icon} ${ac.name.length>4?ac.name.slice(0,4):ac.name}</div>
+          <div class="asset-bar-track"><div class="asset-bar-fill" style="width:${pct}%;${isDebt?'background:linear-gradient(90deg,#d4756b,#e8a840)':''}"></div>
+            <div class="asset-bar-val ${pct<30?'dark':''}">${isDebt?'-':''}${formatMoney(ac.balance)}</div></div>
+        </div>`;
+      });
+      html+=`</div>`;
+      html+=`<button class="btn btn-green" style="width:100%;margin-top:4px" onclick="openAcctModal()">+ 添加账户</button>`;
+      html+=`<button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="openTxModal()">+ 记一笔</button>`;
+    }
+  }
+  if(tab==='accounts'){
+    if(a.accounts.length===0){
+      html+=`<div class="asset-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">💳</div>
+        <div style="font-size:13px;margin-bottom:14px">还没有账户</div>
+        <button class="btn btn-green" onclick="openAcctModal()">+ 添加账户</button></div>`;
+    }else{
+      const grouped={};
+      a.accounts.forEach((ac,i)=>{ac._idx=i;(grouped[ac.type]=grouped[ac.type]||[]).push(ac);});
+      Object.keys(grouped).forEach(typeId=>{
+        const t=ASSET_TYPES.find(x=>x.id===typeId)||ASSET_TYPES[6];
+        const list=grouped[typeId];
+        const sum=list.reduce((s,ac)=>s+(typeId==='debt'?-1:1)*(Number(ac.balance)||0),0);
+        html+=`<div class="card"><span class="card-sub">${t.icon} ${t.label} · ¥${formatMoney(sum)}</span></div>`;
+        list.forEach(ac=>{
+          html+=`<div class="asset-acct-card">
+            <div class="asset-acct-top">
+              <div class="asset-acct-icon ${t.cls}">${t.icon}</div>
+              <div class="asset-acct-info"><div class="asset-acct-name">${ac.name}</div>
+                <div class="asset-acct-type">${t.label}${ac.note?' · '+ac.note:''}</div></div>
+              <div class="asset-acct-amount ${typeId==='debt'?'debt':''}">${typeId==='debt'?'-':''}¥${formatMoney(ac.balance)}</div>
+            </div>
+            <div class="asset-acct-actions">
+              <button class="btn btn-outline" onclick="openTxModal(${ac._idx})">📝 记账</button>
+              <button class="btn btn-outline" onclick="editAcct(${ac._idx})">✏️ 编辑</button>
+              <button class="btn btn-outline" onclick="delAcct(${ac._idx})" style="color:var(--danger)">🗑️</button>
+            </div>
+          </div>`;
+        });
+      });
+      html+=`<button class="btn btn-green" style="width:100%;margin-top:4px" onclick="openAcctModal()">+ 添加账户</button>`;
+    }
+  }
+  if(tab==='tx'){
+    html+=`<button class="btn btn-green" style="width:100%;margin-bottom:10px" onclick="openTxModal()">+ 记一笔</button>`;
+    if(a.transactions.length===0){
+      html+=`<div class="asset-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">📝</div>
+        <div style="font-size:13px">还没有记账记录</div></div>`;
+    }else{
+      const sorted=[...a.transactions].reverse();
+      sorted.forEach((t,i)=>{
+        const idx=a.transactions.length-1-i;
+        const date=t.date||'';
+        html+=`<div class="asset-tx-card">
+          <div class="asset-tx-icon ${t.type}">${t.type==='income'?'➕':'➖'}</div>
+          <div class="asset-tx-info"><div class="asset-tx-desc">${t.desc||t.category}</div>
+            <div class="asset-tx-meta">${date} · ${t.category} · ${t.accountName||''}</div></div>
+          <div class="asset-tx-amount ${t.type}">${t.type==='income'?'+':'-'}¥${formatMoney(t.amount)}</div>
+          <span style="color:var(--text-light);font-size:18px;cursor:pointer;padding:4px" onclick="delTx(${idx})">×</span>
+        </div>`;
+      });
+    }
+  }
+  if(tab==='stats'){
+    const now=new Date();const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    const monthTx=a.transactions.filter(t=>t.date&&t.date.startsWith(ym));
+    const income=monthTx.filter(t=>t.type==='income').reduce((s,t)=>s+Number(t.amount)||0,0);
+    const expense=monthTx.filter(t=>t.type==='expense').reduce((s,t)=>s+Number(t.amount)||0,0);
+    html+=`<div class="card"><span class="card-sub">📊 本月收支（${now.getFullYear()}年${now.getMonth()+1}月）</span></div>`;
+    html+=`<div class="asset-chart">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+        <div><div style="font-size:11px;color:var(--text-light)">收入</div><div style="color:var(--green);font-weight:600;font-size:18px">+¥${formatMoney(income)}</div></div>
+        <div><div style="font-size:11px;color:var(--text-light)">支出</div><div style="color:var(--danger);font-weight:600;font-size:18px">-¥${formatMoney(expense)}</div></div>
+        <div><div style="font-size:11px;color:var(--text-light)">结余</div><div style="font-weight:600;font-size:18px">¥${formatMoney(income-expense)}</div></div>
+      </div>`;
+    // 支出分类统计
+    const catStats={};
+    monthTx.filter(t=>t.type==='expense').forEach(t=>{catStats[t.category]=(catStats[t.category]||0)+Number(t.amount);});
+    const cats=Object.keys(catStats).sort((a,b)=>catStats[b]-catStats[a]);
+    if(cats.length>0){
+      const maxCat=Math.max(...cats.map(c=>catStats[c]),1);
+      html+=`<div style="font-size:12px;color:var(--text-light);margin:10px 0 6px">支出分类</div>`;
+      cats.forEach(c=>{
+        const pct=Math.round(catStats[c]/maxCat*100);
+        html+=`<div class="asset-bar-row"><div class="asset-bar-label">${c}</div>
+          <div class="asset-bar-track"><div class="asset-bar-fill" style="background:linear-gradient(90deg,#d4756b,#e8a840);width:${pct}%"></div>
+          <div class="asset-bar-val ${pct<30?'dark':''}">¥${formatMoney(catStats[c])}</div></div></div>`;
+      });
+    }else{
+      html+=`<div style="font-size:13px;color:var(--text-light);text-align:center;padding:14px">本月暂无支出记录</div>`;
+    }
+    html+=`</div>`;
+  }
+  // 模态框
+  html+=`<div class="asset-modal" id="assetModal" onclick="if(event.target===this)closeAssetModal()">
+    <div class="asset-modal-box" id="assetModalBox"></div></div>`;
+  return html;
+}
+function switchAssetTab(tab){
+  appData.assetTab=tab;saveData(appData);renderPage('asset');
+}
+let _editAcctIdx=-1;
+function openAcctModal(idx){
+  _editAcctIdx=typeof idx==='number'?idx:-1;
+  const a=getAssetData();const ac=_editAcctIdx>=0?a.accounts[_editAcctIdx]:null;
+  const name=ac?ac.name:'';const balance=ac?ac.balance:'';const type=ac?ac.type:'alipay';const note=ac?ac.note:'';
+  const box=document.getElementById('assetModalBox');
+  box.innerHTML=`<div class="asset-modal-title">${_editAcctIdx>=0?'编辑账户':'添加账户'}</div>
+    <div class="asset-field"><div class="asset-field-label">账户类型</div>
+      <div class="asset-type-grid">${ASSET_TYPES.map(t=>`<span class="asset-type-opt ${type===t.id?'active':''}" data-type="${t.id}" onclick="selAcctType('${t.id}')">${t.icon} ${t.label}</span>`).join('')}</div></div>
+    <div class="asset-field"><div class="asset-field-label">账户名称</div>
+      <input class="input" id="acctName" placeholder="如：招行储蓄卡" value="${name.replace(/"/g,'&quot;')}"></div>
+    <div class="asset-field"><div class="asset-field-label">余额（负债填正数）</div>
+      <input class="input" id="acctBal" type="number" step="0.01" placeholder="0.00" value="${balance}"></div>
+    <div class="asset-field"><div class="asset-field-label">备注（可选）</div>
+      <input class="input" id="acctNote" placeholder="如：工资卡" value="${note.replace(/"/g,'&quot;')}"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-outline" style="flex:1" onclick="closeAssetModal()">取消</button>
+      <button class="btn btn-green" style="flex:1" onclick="saveAcct()">保存</button>
+    </div>`;
+  document.getElementById('assetModal').classList.add('open');
+}
+function selAcctType(id){
+  document.querySelectorAll('.asset-type-opt').forEach(el=>el.classList.toggle('active',el.dataset.type===id));
+}
+function saveAcct(){
+  const name=document.getElementById('acctName').value.trim();
+  const balance=parseFloat(document.getElementById('acctBal').value)||0;
+  const note=document.getElementById('acctNote').value.trim();
+  const typeEl=document.querySelector('.asset-type-opt.active');
+  const type=typeEl?typeEl.dataset.type:'alipay';
+  if(!name){showToast('请填写账户名称');return;}
+  const a=getAssetData();
+  if(_editAcctIdx>=0){
+    a.accounts[_editAcctIdx]={...a.accounts[_editAcctIdx],name,balance,note,type};
+  }else{
+    a.accounts.push({name,balance,note,type,createdAt:new Date().toISOString().slice(0,10)});
+  }
+  saveData(appData);closeAssetModal();renderPage('asset');showToast('已保存');
+}
+function editAcct(idx){openAcctModal(idx);}
+function delAcct(idx){
+  showConfirm('删除这个账户？相关流水也会保留。',()=>{
+    const a=getAssetData();a.accounts.splice(idx,1);saveData(appData);renderPage('asset');showToast('已删除');
+  });
+}
+let _txAcctIdx=-1;
+function openTxModal(acctIdx){
+  _txAcctIdx=typeof acctIdx==='number'?acctIdx:-1;
+  const a=getAssetData();
+  if(a.accounts.length===0){showToast('请先添加账户');return;}
+  const today=new Date().toISOString().slice(0,10);
+  const acctName=_txAcctIdx>=0?a.accounts[_txAcctIdx].name:'';
+  const box=document.getElementById('assetModalBox');
+  box.innerHTML=`<div class="asset-modal-title">记一笔</div>
+    <div class="asset-field"><div class="asset-field-label">类型</div>
+      <div class="asset-type-grid">
+        <span class="asset-type-opt active" data-txtype="expense" onclick="selTxType('expense')">➖ 支出</span>
+        <span class="asset-type-opt" data-txtype="income" onclick="selTxType('income')">➕ 收入</span>
+      </div></div>
+    <div class="asset-field"><div class="asset-field-label">金额</div>
+      <input class="input" id="txAmount" type="number" step="0.01" placeholder="0.00" style="font-size:20px;font-weight:600"></div>
+    <div class="asset-field"><div class="asset-field-label">分类</div>
+      <div class="asset-cat-row" id="txCatRow">${TX_CATEGORIES.expense.map(c=>`<span class="asset-cat-opt ${c==='餐饮'?'active':''}" data-cat="${c}" onclick="selTxCat('${c}')">${c}</span>`).join('')}</div></div>
+    <div class="asset-field"><div class="asset-field-label">账户</div>
+      <select class="input" id="txAcct">${a.accounts.map((ac,i)=>`<option value="${i}" ${i===_txAcctIdx?'selected':''}>${ac.name}</option>`).join('')}</select></div>
+    <div class="asset-field"><div class="asset-field-label">日期</div>
+      <input class="input" id="txDate" type="date" value="${today}"></div>
+    <div class="asset-field"><div class="asset-field-label">备注（可选）</div>
+      <input class="input" id="txDesc" placeholder="如：午餐"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-outline" style="flex:1" onclick="closeAssetModal()">取消</button>
+      <button class="btn btn-green" style="flex:1" onclick="saveTx()">保存</button>
+    </div>`;
+  document.getElementById('assetModal').classList.add('open');
+}
+function selTxType(t){
+  document.querySelectorAll('[data-txtype]').forEach(el=>el.classList.toggle('active',el.dataset.txtype===t));
+  const cats=TX_CATEGORIES[t];
+  document.getElementById('txCatRow').innerHTML=cats.map((c,i)=>`<span class="asset-cat-opt ${i===0?'active':''}" data-cat="${c}" onclick="selTxCat('${c}')">${c}</span>`).join('');
+}
+function selTxCat(c){
+  document.querySelectorAll('.asset-cat-opt').forEach(el=>el.classList.toggle('active',el.dataset.cat===c));
+}
+function saveTx(){
+  const typeEl=document.querySelector('[data-txtype].active');
+  const type=typeEl?typeEl.dataset.txtype:'expense';
+  const amount=parseFloat(document.getElementById('txAmount').value)||0;
+  const catEl=document.querySelector('.asset-cat-opt.active');
+  const category=catEl?catEl.dataset.cat:'其他';
+  const acctIdx=parseInt(document.getElementById('txAcct').value);
+  const date=document.getElementById('txDate').value;
+  const desc=document.getElementById('txDesc').value.trim();
+  if(amount<=0){showToast('请输入金额');return;}
+  const a=getAssetData();
+  const acct=a.accounts[acctIdx];
+  if(!acct){showToast('账户错误');return;}
+  // 自动更新账户余额
+  if(type==='income'){
+    if(acct.type==='debt')acct.balance=(Number(acct.balance)||0)-amount; // 还款
+    else acct.balance=(Number(acct.balance)||0)+amount;
+  }else{
+    if(acct.type==='debt')acct.balance=(Number(acct.balance)||0)+amount; // 借款增加
+    else acct.balance=(Number(acct.balance)||0)-amount;
+  }
+  a.transactions.push({type,amount,category,accountId:acctIdx,accountName:acct.name,date,desc,createdAt:Date.now()});
+  saveData(appData);closeAssetModal();renderPage('asset');showToast('已记账');
+}
+function delTx(idx){
+  showConfirm('删除这笔记录？账户余额会反向调整。',()=>{
+    const a=getAssetData();const t=a.transactions[idx];
+    const acct=a.accounts[t.accountId];
+    if(acct){
+      if(t.type==='income'){
+        if(acct.type==='debt')acct.balance=(Number(acct.balance)||0)+t.amount;
+        else acct.balance=(Number(acct.balance)||0)-t.amount;
+      }else{
+        if(acct.type==='debt')acct.balance=(Number(acct.balance)||0)-t.amount;
+        else acct.balance=(Number(acct.balance)||0)+t.amount;
+      }
+    }
+    a.transactions.splice(idx,1);saveData(appData);renderPage('asset');showToast('已删除');
+  });
+}
+function closeAssetModal(){document.getElementById('assetModal').classList.remove('open');}
 
 // ===== 打卡 =====
 function renderCheckin(){
