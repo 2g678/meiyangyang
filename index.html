@@ -463,6 +463,51 @@ textarea.input { resize:vertical; min-height:70px; }
 .click-count { font-size:48px; font-weight:700; }
 .click-time { font-size:14px; opacity:.9; margin-top:6px; }
 
+/* 求职管理 */
+.job-city-box { background:var(--card); border-radius:var(--radius); padding:12px 14px; margin-bottom:12px;
+  border:1px solid var(--border); box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; }
+.job-city-box .label { font-size:13px; color:var(--text-mid); flex-shrink:0; }
+.job-city-box input { flex:1; border:none; outline:none; font-size:15px; font-weight:600; color:var(--green-dark); background:transparent; }
+.job-quick-title { font-size:13px; color:var(--text-light); margin:14px 0 8px; padding:0 2px; }
+.job-platform-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:14px; }
+.job-platform-card { background:var(--card); border-radius:var(--radius-sm); padding:14px 12px; text-align:center;
+  border:1px solid var(--border); box-shadow:var(--shadow); cursor:pointer; transition:transform .12s; text-decoration:none; color:var(--text); display:block; }
+.job-platform-card:active { transform:scale(.96); }
+.job-platform-icon { font-size:26px; margin-bottom:4px; }
+.job-platform-name { font-size:13px; font-weight:600; }
+.job-tabs { display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; padding-bottom:2px; }
+.job-tab { padding:7px 14px; border-radius:18px; font-size:13px; white-space:nowrap; cursor:pointer;
+  background:#fff; border:1.5px solid var(--border); color:var(--text-mid); }
+.job-tab.active { background:var(--green); color:#fff; border-color:var(--green); }
+.job-tab .count { font-size:11px; opacity:.8; margin-left:3px; }
+.job-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  border:1px solid var(--border); box-shadow:var(--shadow); border-left:3px solid var(--green); }
+.job-card.status-applied { border-left-color:#4a8fc4; }
+.job-card.status-interview { border-left-color:#e8a840; }
+.job-card.status-offer { border-left-color:var(--green); }
+.job-card.status-rejected { border-left-color:var(--danger); opacity:.75; }
+.job-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.job-card-title { font-size:16px; font-weight:600; flex:1; line-height:1.3; }
+.job-card-salary { font-size:15px; font-weight:700; color:var(--hot); white-space:nowrap; }
+.job-card-company { font-size:13px; color:var(--text-mid); margin-bottom:6px; }
+.job-card-meta { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.job-card-meta .tag { font-size:11px; }
+.job-tag-platform { background:#e8f0fe; color:#1677ff; }
+.job-tag-city { background:var(--green-light); color:var(--green-dark); }
+.job-tag-status { background:#fff5e6; color:#b8813a; }
+.job-tag-status.s-applied { background:#e8f0fe; color:#1677ff; }
+.job-tag-status.s-interview { background:#fff5e6; color:#b8813a; }
+.job-tag-status.s-offer { background:var(--green-light); color:var(--green-dark); }
+.job-tag-status.s-rejected { background:#ffebeb; color:#c94a4a; }
+.job-card-actions { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.job-card-actions .btn { padding:5px 11px; font-size:12px; }
+.job-card-link { display:inline-flex; align-items:center; gap:3px; margin-top:6px; font-size:12px; color:var(--blue); }
+.job-stat-card { background:var(--card); border-radius:var(--radius-sm); padding:12px; text-align:center;
+  border:1px solid var(--border); }
+.job-stat-num { font-size:20px; font-weight:700; }
+.job-stat-label { font-size:11px; color:var(--text-light); margin-top:2px; }
+.job-empty { text-align:center; padding:30px 16px; color:var(--text-light); }
+
 /* 打卡 */
 .checkin-calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
 .cal-day-header { text-align:center; font-size:11px; color:var(--text-light); padding:4px 0; }
@@ -557,7 +602,7 @@ const navItems=[
   {id:'inspire',label:'灵感每日推送',icon:'💡'},{id:'meme',label:'热梗追踪',icon:'🔥',badge:'HOT'},
   {id:'travel',label:'旅游攻略',icon:'✈️'},{id:'book',label:'每日荐书',icon:'📚'},
   {id:'english',label:'英语学习',icon:'🌍'},{id:'recipe',label:'食材找食谱',icon:'🍳'},
-  {id:'asset',label:'资产记账',icon:'💰'},{id:'game',label:'小游戏',icon:'🎮'},{id:'checkin',label:'打卡记录',icon:'✅'},
+  {id:'asset',label:'资产记账',icon:'💰'},{id:'game',label:'小游戏',icon:'🎮'},{id:'job',label:'求职管理',icon:'💼'},{id:'checkin',label:'打卡记录',icon:'✅'},
 ];
 let currentPage='home';
 
@@ -586,6 +631,7 @@ function renderPage(pageId){
     case 'recipe':main.innerHTML=renderRecipe();break;
     case 'asset':main.innerHTML=renderAsset();break;
     case 'game':main.innerHTML=renderGame();break;
+    case 'job':main.innerHTML=renderJob();break;
     case 'checkin':main.innerHTML=renderCheckin();break;
     default:main.innerHTML=renderHome();
   }
@@ -1896,6 +1942,176 @@ function clickGo(){
   }else{
     click.count++;countEl.textContent=click.count;
   }
+}
+
+// ===== 求职管理 =====
+const JOB_PLATFORMS=[
+  {id:'boss',name:'BOSS直聘',icon:'👨‍💼',searchUrl:'https://www.zhipin.com/web/geek/job?query={kw}&city={city}'},
+  {id:'lagou',name:'拉勾网',icon:'🎯',searchUrl:'https://www.lagou.com/jobs/list_{kw}?city={city}'},
+  {id:'liepin',name:'猎聘',icon:'🦁',searchUrl:'https://www.liepin.com/zhaopin/?key={kw}&dqs={city}'},
+  {id:'51job',name:'前程无忧',icon:'📋',searchUrl:'https://we.51job.com/pc/search?keyword={kw}&jobArea={city}'},
+  {id:'zhaopin',name:'智联招聘',icon:'🧭',searchUrl:'https://sou.zhaopin.com/?jl={city}&kw={kw}'},
+  {id:'58',name:'58同城',icon:'🏠',searchUrl:'https://search.58.com/job?key={kw}&region={city}'},
+];
+const JOB_STATUS=[
+  {id:'wishlist',label:'待投递',color:'#8c8c8c'},
+  {id:'applied',label:'已投递',color:'#4a8fc4'},
+  {id:'interview',label:'面试中',color:'#e8a840'},
+  {id:'offer',label:'已offer',color:'#2d7d4f'},
+  {id:'rejected',label:'已拒绝',color:'#d4756b'},
+];
+function getJobData(){
+  if(!appData.job)appData.job={city:'北京',keyword:'',jobs:[]};
+  return appData.job;
+}
+function renderJob(){
+  const d=getJobData();
+  const tab=appData.jobTab||'all';
+  let html=`
+    <div class="job-city-box">
+      <span class="label">📍 城市</span>
+      <input type="text" value="${(d.city||'').replace(/"/g,'&quot;')}" placeholder="如：北京" onblur="saveJobCity(this.value)">
+    </div>
+    <div class="job-city-box">
+      <span class="label">🔍 职位</span>
+      <input type="text" value="${(d.keyword||'').replace(/"/g,'&quot;')}" placeholder="如：前端工程师" onblur="saveJobKeyword(this.value)">
+    </div>`;
+  // 快捷入口
+  html+=`<div class="job-quick-title">🔗 一键搜索各平台招聘（点击跳转）</div>`;
+  html+=`<div class="job-platform-grid">`;
+  const city=encodeURIComponent(d.city||'');const kw=encodeURIComponent(d.keyword||'');
+  JOB_PLATFORMS.forEach(p=>{
+    const url=p.searchUrl.replace('{kw}',kw).replace('{city}',city);
+    html+=`<a class="job-platform-card" href="${url}" target="_blank">
+      <div class="job-platform-icon">${p.icon}</div>
+      <div class="job-platform-name">${p.name}</div></a>`;
+  });
+  html+=`</div>`;
+  // 统计
+  const jobs=d.jobs||[];
+  if(jobs.length>0){
+    const stats={};
+    JOB_STATUS.forEach(s=>stats[s.id]=0);
+    jobs.forEach(j=>{if(stats[j.status]!==undefined)stats[j.status]++;});
+    html+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px">`;
+    JOB_STATUS.forEach(s=>{
+      html+=`<div class="job-stat-card"><div class="job-stat-num" style="color:${s.color}">${stats[s.id]}</div><div class="job-stat-label">${s.label}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  // 标签栏
+  html+=`<button class="btn btn-green" style="width:100%;margin-bottom:10px" onclick="openJobModal()">+ 添加招聘信息</button>`;
+  html+=`<div class="job-tabs">`;
+  html+=`<span class="job-tab ${tab==='all'?'active':''}" onclick="switchJobTab('all')">全部<span class="count">${jobs.length}</span></span>`;
+  JOB_STATUS.forEach(s=>{
+    const c=jobs.filter(j=>j.status===s.id).length;
+    html+=`<span class="job-tab ${tab===s.id?'active':''}" onclick="switchJobTab('${s.id}')">${s.label}<span class="count">${c}</span></span>`;
+  });
+  html+=`</div>`;
+  // 列表
+  let list=tab==='all'?jobs:jobs.filter(j=>j.status===tab);
+  if(list.length===0){
+    html+=`<div class="job-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">💼</div>
+      <div style="font-size:13px;margin-bottom:14px">${tab==='all'?'还没有记录，点击上方按钮添加':'该状态下暂无记录'}</div></div>`;
+  }else{
+    list.forEach(j=>{
+      const idx=jobs.indexOf(j);
+      const platform=JOB_PLATFORMS.find(p=>p.id===j.platform);
+      const status=JOB_STATUS.find(s=>s.id===j.status);
+      html+=`<div class="job-card status-${j.status}">
+        <div class="job-card-top">
+          <div class="job-card-title">${j.title||'未命名'}</div>
+          <div class="job-card-salary">${j.salary||''}</div>
+        </div>
+        <div class="job-card-company">${j.company||''}</div>
+        <div class="job-card-meta">
+          ${platform?`<span class="tag job-tag-platform">${platform.icon} ${platform.name}</span>`:''}
+          ${j.city?`<span class="tag job-tag-city">📍 ${j.city}</span>`:''}
+          ${status?`<span class="tag job-tag-status s-${j.status}">${status.label}</span>`:''}
+          ${j.date?`<span class="tag" style="background:#f5f5f5;color:var(--text-light)">📅 ${j.date}</span>`:''}
+        </div>
+        ${j.note?`<div style="font-size:12px;color:var(--text-mid);margin-top:6px;line-height:1.5">${j.note}</div>`:''}
+        ${j.link?`<a class="job-card-link" href="${j.link}" target="_blank">🔗 查看原招聘页面</a>`:''}
+        <div class="job-card-actions">
+          <button class="btn btn-outline" onclick="cycleJobStatus(${idx})">📊 改状态</button>
+          <button class="btn btn-outline" onclick="editJob(${idx})">✏️ 编辑</button>
+          <button class="btn btn-outline" onclick="delJob(${idx})" style="color:var(--danger)">🗑️</button>
+        </div>
+      </div>`;
+    });
+  }
+  html+=`<div class="asset-modal" id="jobModal" onclick="if(event.target===this)closeJobModal()">
+    <div class="asset-modal-box" id="jobModalBox"></div></div>`;
+  return html;
+}
+function saveJobCity(v){getJobData().city=v.trim();saveData(appData);}
+function saveJobKeyword(v){getJobData().keyword=v.trim();saveData(appData);}
+function switchJobTab(tab){appData.jobTab=tab;saveData(appData);renderPage('job');}
+let _editJobIdx=-1;
+function openJobModal(idx){
+  _editJobIdx=typeof idx==='number'?idx:-1;
+  const d=getJobData();const j=_editJobIdx>=0?d.jobs[_editJobIdx]:{};
+  const today=new Date().toISOString().slice(0,10);
+  const box=document.getElementById('jobModalBox');
+  box.innerHTML=`<div class="asset-modal-title">${_editJobIdx>=0?'编辑招聘信息':'添加招聘信息'}</div>
+    <div class="asset-field"><div class="asset-field-label">职位名称 *</div>
+      <input class="input" id="jobTitle" placeholder="如：前端开发工程师" value="${(j.title||'').replace(/"/g,'&quot;')}"></div>
+    <div class="asset-field"><div class="asset-field-label">公司</div>
+      <input class="input" id="jobCompany" placeholder="如：字节跳动" value="${(j.company||'').replace(/"/g,'&quot;')}"></div>
+    <div class="asset-field"><div class="asset-field-label">薪资范围</div>
+      <input class="input" id="jobSalary" placeholder="如：15-25K·14薪" value="${(j.salary||'').replace(/"/g,'&quot;')}"></div>
+    <div class="asset-field"><div class="asset-field-label">招聘平台</div>
+      <select class="input" id="jobPlatform">
+        ${JOB_PLATFORMS.map(p=>`<option value="${p.id}" ${j.platform===p.id?'selected':''}>${p.icon} ${p.name}</option>`).join('')}
+      </select></div>
+    <div class="asset-field"><div class="asset-field-label">工作城市</div>
+      <input class="input" id="jobCity" placeholder="如：北京" value="${(j.city||getJobData().city||'').replace(/"/g,'&quot;')}"></div>
+    <div class="asset-field"><div class="asset-field-label">投递状态</div>
+      <select class="input" id="jobStatus">
+        ${JOB_STATUS.map(s=>`<option value="${s.id}" ${j.status===s.id?'selected':''}>${s.label}</option>`).join('')}
+      </select></div>
+    <div class="asset-field"><div class="asset-field-label">日期</div>
+      <input class="input" id="jobDate" type="date" value="${j.date||today}"></div>
+    <div class="asset-field"><div class="asset-field-label">招聘链接</div>
+      <input class="input" id="jobLink" placeholder="https://..." value="${(j.link||'').replace(/"/g,'&quot;')}"></div>
+    <div class="asset-field"><div class="asset-field-label">备注（面试时间/HR联系方式等）</div>
+      <textarea class="input" id="jobNote" rows="3" placeholder="如：周三下午3点视频面试，HR微信xxx">${j.note||''}</textarea></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-outline" style="flex:1" onclick="closeJobModal()">取消</button>
+      <button class="btn btn-green" style="flex:1" onclick="saveJob()">保存</button>
+    </div>`;
+  document.getElementById('jobModal').classList.add('open');
+}
+function saveJob(){
+  const title=document.getElementById('jobTitle').value.trim();
+  if(!title){showToast('请填写职位名称');return;}
+  const data={
+    title,company:document.getElementById('jobCompany').value.trim(),
+    salary:document.getElementById('jobSalary').value.trim(),
+    platform:document.getElementById('jobPlatform').value,
+    city:document.getElementById('jobCity').value.trim(),
+    status:document.getElementById('jobStatus').value,
+    date:document.getElementById('jobDate').value,
+    link:document.getElementById('jobLink').value.trim(),
+    note:document.getElementById('jobNote').value.trim(),
+  };
+  const d=getJobData();
+  if(_editJobIdx>=0)d.jobs[_editJobIdx]={...d.jobs[_editJobIdx],...data};
+  else d.jobs.push({createdAt:Date.now(),...data});
+  saveData(appData);closeJobModal();renderPage('job');showToast('已保存');
+}
+function editJob(idx){openJobModal(idx);}
+function delJob(idx){
+  showConfirm('删除这条招聘记录？',()=>{const d=getJobData();d.jobs.splice(idx,1);saveData(appData);renderPage('job');showToast('已删除');});
+}
+function cycleJobStatus(idx){
+  const d=getJobData();const j=d.jobs[idx];
+  const ids=JOB_STATUS.map(s=>s.id);
+  const cur=ids.indexOf(j.status);
+  j.status=ids[(cur+1)%ids.length];
+  saveData(appData);renderPage('job');
+  const s=JOB_STATUS.find(x=>x.id===j.status);
+  showToast('状态：'+s.label);
 }
 
 // ===== 打卡 =====
