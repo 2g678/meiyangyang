@@ -2177,10 +2177,11 @@ const DESTINATIONS=[
   {name:'芽庄',icon:'🥥',region:'境外·越南',season:'1-8月',days:'4-5天',desc:'珍珠岛、泥浆浴、海鲜大餐，越南海滨度假性价比之王。'},
 ];
 const FLIGHT_PLATFORMS=[
-  {id:'ctrip',name:'携程',icon:'🛫',url:'https://flights.ctrip.com/online/list/oneway-{from}-{to}?depdate={date}'},
-  {id:'qunar',name:'去哪儿',icon:'🛩️',url:'https://flight.qunar.com/site/oneway_list.htm?fromCity={from}&toCity={to}&fromDate={date}'},
+  {id:'ctrip',name:'携程',icon:'🛫',url:'https://flights.ctrip.com/online/list/oneway-{from}-{to}?depdate={date}&cabin=y_s&lowprice=1'},
+  {id:'qunar',name:'去哪儿',icon:'🛩️',url:'https://flight.qunar.com/site/oneway_list.htm?fromCity={from}&toCity={to}&fromDate={date}&child=0&baby=0&cabinType=0'},
   {id:'fliggy',name:'飞猪',icon:'🐷',url:'https://www.fliggy.com/flight/domestic-search?depCity={from}&arrCity={to}&depDate={date}'},
   {id:'tongcheng',name:'同程',icon:'🚀',url:'https://www.ly.com/flights/itinerary/oneway/{from}-{to}?date={date}'},
+  {id:'trip',name:'Trip.com',icon:'🌍',url:'https://www.trip.com/flights/showfaresearch?dcity={from}&acity={to}&ddate={date}&triptype=ow&class=y&lowprice=1&quantity=1'},
 ];
 function getFlightData(){
   if(!appData.flight)appData.flight={origin:'重庆',tracked:[]};
@@ -2210,31 +2211,23 @@ function renderFlight(){
           <input type="text" id="flightSearchInput" value="${(appData.flightSearchDest||'').replace(/"/g,'&quot;')}" placeholder="想去哪？" style="width:100%;background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:8px 12px;color:#fff;font-size:15px;font-weight:600;outline:none">
         </div>
       </div>
-      <button class="btn" onclick="openAllFlightPlatforms('${origin.replace(/'/g,"\\'")}')" style="width:100%;background:#fff;color:var(--green);font-weight:600;border:none;border-radius:10px;padding:10px">🚀 一键打开四大平台比价</button>
-      <div style="font-size:10px;opacity:.75;margin-top:6px;text-align:center">💡 首次使用会询问是否允许弹窗，请选「允许」</div>
+      <button class="btn" onclick="doFlightSearch('${origin.replace(/'/g,"\\'")}')" style="width:100%;background:#fff;color:var(--green);font-weight:600;border:none;border-radius:10px;padding:10px">🔍 搜索特价机票</button>
     </div>`;
   // 搜索结果
   const searchDest=appData.flightSearchDest||'';
   if(searchDest){
-    html+=`<div class="card"><span class="card-sub">🔎 「${origin} → ${searchDest}」比价结果</span></div>`;
-    html+=`<div class="flight-today-card">
-      <div class="flight-today-img">🔎</div>
-      <div class="flight-today-body">
-        <div class="flight-today-tag">🔍 自定义搜索</div>
-        <div class="flight-today-name">${searchDest}</div>
-        <div class="flight-today-sub">从 ${origin} 出发</div>
-        <div style="font-size:12px;color:var(--text-light);margin-bottom:8px">💡 点击下方按钮查询「${origin} → ${searchDest}」各平台票价：</div>
-        <div class="flight-deal-btns">`;
+    html+=`<div class="card"><span class="card-sub">🔎 「${origin} → ${searchDest}」点击平台查价</span></div>`;
     const fromEnc=encodeURIComponent(origin);const toEnc=encodeURIComponent(searchDest);
     FLIGHT_PLATFORMS.forEach(p=>{
       const url=p.url.replace('{from}',fromEnc).replace('{to}',toEnc).replace('{date}',today);
-      html+=`<a class="flight-deal-btn" href="${url}" target="_blank">
-        <div class="icon">${p.icon}</div><div class="name">${p.name}</div>
-        <div class="sub">查特价</div></a>`;
+      html+=`<a href="${url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;text-decoration:none;color:var(--text);box-shadow:var(--shadow);transition:transform .12s">
+        <div style="font-size:26px;width:40px;text-align:center">${p.icon}</div>
+        <div style="flex:1"><div style="font-size:15px;font-weight:600">${p.name}</div>
+        <div style="font-size:11px;color:var(--text-light)">点击查 ${origin} → ${searchDest} 票价</div></div>
+        <div style="color:var(--green);font-size:18px">›</div>
+      </a>`;
     });
-    html+=`</div>
-      <button class="btn btn-outline" style="width:100%;margin-top:10px" onclick="clearFlightSearch()">✕ 清除搜索</button>
-    </div></div>`;
+    html+=`<button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="clearFlightSearch()">✕ 清除搜索</button>`;
   }
   // 今日推荐
   html+=`<div class="card"><span class="card-sub">📅 今日推荐目的地（每天换一个）</span></div>`;
@@ -2251,10 +2244,10 @@ function renderFlight(){
       </div>
       <div style="font-size:12px;color:var(--text-light);margin-bottom:8px">💡 点击下方按钮查询「${origin} → ${dest.name}」特价机票：</div>
       <div class="flight-deal-btns">`;
-  const fromEnc=encodeURIComponent(origin);const toEnc=encodeURIComponent(dest.name);
+  const fromEnc2=encodeURIComponent(origin);const toEnc2=encodeURIComponent(dest.name);
   FLIGHT_PLATFORMS.forEach(p=>{
-    const url=p.url.replace('{from}',fromEnc).replace('{to}',toEnc).replace('{date}',today);
-    html+=`<a class="flight-deal-btn" href="${url}" target="_blank">
+    const url=p.url.replace('{from}',fromEnc2).replace('{to}',toEnc2).replace('{date}',today);
+    html+=`<a class="flight-deal-btn" href="${url}" target="_blank" rel="noopener">
       <div class="icon">${p.icon}</div><div class="name">${p.name}</div>
       <div class="sub">查特价</div></a>`;
   });
@@ -2304,25 +2297,11 @@ function searchFlightDest(){
   if(!v){showToast('请输入目的地');return;}
   appData.flightSearchDest=v;saveData(appData);renderPage('flight');
 }
-function openAllFlightPlatforms(origin){
+function doFlightSearch(origin){
   const input=document.getElementById('flightSearchInput');
-  const dest=input?input.value.trim():(appData.flightSearchDest||'');
-  if(!dest){showToast('请先输入目的地');return;}
-  appData.flightSearchDest=dest;saveData(appData);
-  const today=new Date().toISOString().slice(0,10);
-  const fromEnc=encodeURIComponent(origin);const toEnc=encodeURIComponent(dest);
-  let opened=0;
-  FLIGHT_PLATFORMS.forEach(p=>{
-    const url=p.url.replace('{from}',fromEnc).replace('{to}',toEnc).replace('{date}',today);
-    const w=window.open(url,'_blank');
-    if(w)opened++;
-  });
-  if(opened<FLIGHT_PLATFORMS.length){
-    showToast('⚠️ 浏览器拦截了部分弹窗，请允许弹窗后重试，或点下方按钮逐个打开');
-  }else{
-    showToast('✅ 已打开 '+opened+' 个平台，切换标签页比价');
-  }
-  renderPage('flight');
+  const v=input?input.value.trim():'';
+  if(!v){showToast('请输入目的地');return;}
+  appData.flightSearchDest=v;saveData(appData);renderPage('flight');
 }
 function clearFlightSearch(){appData.flightSearchDest='';saveData(appData);renderPage('flight');}
 function shuffleDest(){
