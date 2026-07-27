@@ -1253,71 +1253,158 @@ function checkAnswer(idx,selected,correct){
 function shuffleArray(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 // ===== 食材找食谱 =====
+const RECIPE_PLATFORMS=[
+  {id:'xiachufang',name:'下厨房',icon:'🍳',url:'https://www.xiachufang.com/search/?keyword={kw}'},
+  {id:'douguo',name:'豆果美食',icon:'🥘',url:'https://www.douguo.com/search/recipe/{kw}'},
+  {id:'meishij',name:'美食杰',icon:'👨‍🍳',url:'https://www.meishij.net/search.php?q={kw}'},
+  {id:'xhs',name:'小红书',icon:'📕',url:'https://www.xiaohongshu.com/search_result?keyword={kw}%20菜谱'},
+  {id:'bilibili',name:'B站视频',icon:'📺',url:'https://search.bilibili.com/all?keyword={kw}%20做法'},
+  {id:'douyin',name:'抖音',icon:'🎵',url:'https://www.douyin.com/search/{kw}%20做法'},
+];
+const MEAL_TYPES=['全部','早餐','午餐','晚餐','汤品','凉菜','主食','小食'];
 const recipeData=[
-  {name:'番茄炒蛋',icon:'🍳',time:'10分钟',difficulty:'简单',servings:'2人份',
-   desc:'国民家常菜，酸甜下饭，零失败入门菜。番茄的酸甜裹着嫩滑鸡蛋，百吃不厌。',
-   ingredients:['番茄','鸡蛋','葱','盐','糖','食用油'],
-   steps:['鸡蛋打散加少许盐，番茄切块，葱切花','热锅冷油，倒入蛋液划散盛出','底油炒番茄至出汁，加糖、盐调味','倒回鸡蛋翻匀，撒葱花出锅']},
-  {name:'蛋炒饭',icon:'🍚',time:'8分钟',difficulty:'简单',servings:'1人份',
-   desc:'剩米饭的最佳归宿，粒粒分明，蛋香四溢。深夜食堂的灵魂料理。',
-   ingredients:['米饭','鸡蛋','葱','盐','酱油','食用油'],
-   steps:['鸡蛋打散，葱切葱花，米饭提前打散','热油下蛋液快速炒散','倒入米饭大火翻炒至粒粒分明','加盐、酱油调味，撒葱花出锅']},
-  {name:'番茄蛋汤',icon:'🍅',time:'15分钟',difficulty:'简单',servings:'2人份',
-   desc:'暖胃快手汤，酸甜开胃。饭前来一碗，胃口大开。',
-   ingredients:['番茄','鸡蛋','葱','盐','香油','淀粉'],
-   steps:['番茄切小块，鸡蛋打散','水烧开下番茄煮3分钟','水淀粉勾芡，淋入蛋液成蛋花','加盐、香油，撒葱花']},
-  {name:'青椒土豆丝',icon:'🥔',time:'15分钟',difficulty:'简单',servings:'2人份',
-   desc:'清脆爽口的下饭菜，土豆丝切得越细越入味。讲究大火快炒保持脆感。',
-   ingredients:['土豆','青椒','蒜','盐','醋','食用油'],
-   steps:['土豆切细丝泡水去淀粉，青椒切丝','热油爆香蒜末','下土豆丝大火快炒2分钟','加青椒丝、盐、醋翻炒匀出锅']},
-  {name:'土豆炖牛肉',icon:'🥩',time:'60分钟',difficulty:'中等',servings:'3人份',
-   desc:'软烂入味的经典炖菜，牛肉酥烂、土豆绵密，汤汁拌饭一绝。',
-   ingredients:['牛肉','土豆','胡萝卜','姜','葱','八角','酱油','盐','料酒'],
-   steps:['牛肉切块冷水下锅焯水','爆香葱姜八角，下牛肉翻炒','加酱油、料酒、热水炖40分钟','下土豆、胡萝卜炖20分钟，加盐收汁']},
-  {name:'青椒肉丝',icon:'🌶️',time:'15分钟',difficulty:'中等',servings:'2人份',
-   desc:'川菜经典，青椒清香配肉丝滑嫩，下饭神器。讲究肉丝嫩滑、青椒脆爽。',
-   ingredients:['猪肉','青椒','姜','蒜','酱油','盐','料酒','淀粉','食用油'],
-   steps:['猪肉切丝加酱油、料酒、淀粉抓匀腌制10分钟','青椒切丝，姜蒜切末','热油滑炒肉丝变色盛出','底油爆香姜蒜，下青椒丝炒断生，倒回肉丝调味出锅']},
-  {name:'蒜蓉西兰花',icon:'🥦',time:'8分钟',difficulty:'简单',servings:'2人份',
-   desc:'健康低脂的清肠菜，蒜香浓郁，翠绿爽口。减脂人群的福音。',
-   ingredients:['西兰花','蒜','盐','食用油','蚝油'],
-   steps:['西兰花掰小朵焯水1分钟','蒜切末','热油爆香蒜末','下西兰花翻炒，加盐、蚝油出锅']},
-  {name:'红烧豆腐',icon:'🍲',time:'15分钟',difficulty:'简单',servings:'2人份',
-   desc:'嫩豆腐吸饱酱汁，咸香下饭。素食者的蛋白质担当。',
-   ingredients:['豆腐','葱','姜','蒜','酱油','盐','糖','淀粉','食用油'],
-   steps:['豆腐切块，葱姜蒜切末','热油煎豆腐两面金黄','爆香葱姜蒜，加酱油、糖、水','下豆腐炖3分钟，水淀粉勾芡，撒葱花']},
-  {name:'黄瓜拌木耳',icon:'🥗',time:'10分钟',difficulty:'简单',servings:'2人份',
-   desc:'清爽开胃的凉拌菜，脆嫩爽口，夏日必备。木耳脆、黄瓜清香。',
-   ingredients:['黄瓜','木耳','蒜','醋','盐','香油','辣椒油'],
-   steps:['木耳泡发焯水，黄瓜拍碎切段','蒜切末','所有调料拌匀','浇在黄瓜木耳上拌匀即可']},
-  {name:'鸡蛋羹',icon:'🍮',time:'15分钟',difficulty:'简单',servings:'1人份',
+  // ===== 早餐 =====
+  {name:'鸡蛋羹',icon:'🍮',meal:'早餐',time:'15分钟',difficulty:'简单',servings:'1人份',
    desc:'嫩滑如布丁的蒸蛋，老少皆宜。加几滴酱油更香。',
    ingredients:['鸡蛋','葱','盐','酱油','香油','温水'],
    steps:['鸡蛋打散加1.5倍温水和盐搅匀','过筛去气泡，盖保鲜膜','水开上锅中小火蒸10分钟','淋酱油、香油，撒葱花']},
-  {name:'葱油拌面',icon:'🍜',time:'15分钟',difficulty:'简单',servings:'1人份',
-   desc:'上海经典，葱香浓郁，简单到极致就是美味。一把葱、一碗面、一勺酱。',
+  {name:'蛋花粥',icon:'🥣',meal:'早餐',time:'40分钟',difficulty:'简单',servings:'2人份',
+   desc:'清淡养胃的早晚餐，蛋花滑嫩、米香浓郁。',
+   ingredients:['大米','鸡蛋','葱','盐','香油'],
+   steps:['大米淘净加水煮粥','鸡蛋打散','粥将好时淋入蛋液搅成蛋花','加盐、香油，撒葱花']},
+  {name:'葱油拌面',icon:'🍜',meal:'早餐',time:'15分钟',difficulty:'简单',servings:'1人份',
+   desc:'上海经典，葱香浓郁，简单到极致就是美味。',
    ingredients:['面条','葱','酱油','糖','食用油','盐'],
    steps:['葱切长段','热油小火煎葱段至焦黄','加酱油、糖熬成葱油汁','面条煮熟过水，浇葱油汁拌匀']},
-  {name:'韭菜炒蛋',icon:'🥚',time:'10分钟',difficulty:'简单',servings:'2人份',
+  {name:'韭菜炒蛋',icon:'🥚',meal:'早餐',time:'10分钟',difficulty:'简单',servings:'2人份',
    desc:'春日时令菜，韭菜鲜香配鸡蛋嫩滑，简单却惊艳。',
    ingredients:['韭菜','鸡蛋','盐','食用油'],
    steps:['韭菜切段，鸡蛋打散','热油炒蛋盛出','下韭菜大火快炒30秒','倒回鸡蛋翻匀，加盐出锅']},
-  {name:'蒜蓉粉丝蒸虾',icon:'🦐',time:'20分钟',difficulty:'中等',servings:'2人份',
+  {name:'皮蛋瘦肉粥',icon:'🍚',meal:'早餐',time:'60分钟',difficulty:'中等',servings:'3人份',
+   desc:'广式早茶经典，皮蛋的醇香配瘦肉的鲜嫩，暖胃又暖心。',
+   ingredients:['大米','皮蛋','猪肉','姜','葱','盐','香油'],
+   steps:['大米淘净加油盐腌制30分钟','瘦肉切丝用盐腌制','皮蛋切丁','大米煮粥，加皮蛋瘦肉煮20分钟，调味撒葱花']},
+  // ===== 午餐/晚餐 =====
+  {name:'番茄炒蛋',icon:'🍳',meal:'午餐',time:'10分钟',difficulty:'简单',servings:'2人份',
+   desc:'国民家常菜，酸甜下饭，零失败入门菜。番茄的酸甜裹着嫩滑鸡蛋，百吃不厌。',
+   ingredients:['番茄','鸡蛋','葱','盐','糖','食用油'],
+   steps:['鸡蛋打散加少许盐，番茄切块，葱切花','热锅冷油，倒入蛋液划散盛出','底油炒番茄至出汁，加糖、盐调味','倒回鸡蛋翻匀，撒葱花出锅']},
+  {name:'蛋炒饭',icon:'🍚',meal:'午餐',time:'8分钟',difficulty:'简单',servings:'1人份',
+   desc:'剩米饭的最佳归宿，粒粒分明，蛋香四溢。',
+   ingredients:['米饭','鸡蛋','葱','盐','酱油','食用油'],
+   steps:['鸡蛋打散，葱切葱花，米饭提前打散','热油下蛋液快速炒散','倒入米饭大火翻炒至粒粒分明','加盐、酱油调味，撒葱花出锅']},
+  {name:'青椒土豆丝',icon:'🥔',meal:'午餐',time:'15分钟',difficulty:'简单',servings:'2人份',
+   desc:'清脆爽口的下饭菜，土豆丝切得越细越入味。',
+   ingredients:['土豆','青椒','蒜','盐','醋','食用油'],
+   steps:['土豆切细丝泡水去淀粉，青椒切丝','热油爆香蒜末','下土豆丝大火快炒2分钟','加青椒丝、盐、醋翻炒匀出锅']},
+  {name:'土豆炖牛肉',icon:'🥩',meal:'晚餐',time:'60分钟',difficulty:'中等',servings:'3人份',
+   desc:'软烂入味的经典炖菜，牛肉酥烂、土豆绵密，汤汁拌饭一绝。',
+   ingredients:['牛肉','土豆','胡萝卜','姜','葱','八角','酱油','盐','料酒'],
+   steps:['牛肉切块冷水下锅焯水','爆香葱姜八角，下牛肉翻炒','加酱油、料酒、热水炖40分钟','下土豆、胡萝卜炖20分钟，加盐收汁']},
+  {name:'青椒肉丝',icon:'🌶️',meal:'午餐',time:'15分钟',difficulty:'中等',servings:'2人份',
+   desc:'川菜经典，青椒清香配肉丝滑嫩，下饭神器。',
+   ingredients:['猪肉','青椒','姜','蒜','酱油','盐','料酒','淀粉','食用油'],
+   steps:['猪肉切丝加酱油、料酒、淀粉抓匀腌制10分钟','青椒切丝，姜蒜切末','热油滑炒肉丝变色盛出','底油爆香姜蒜，下青椒丝炒断生，倒回肉丝调味出锅']},
+  {name:'红烧豆腐',icon:'🍲',meal:'晚餐',time:'15分钟',difficulty:'简单',servings:'2人份',
+   desc:'嫩豆腐吸饱酱汁，咸香下饭。素食者的蛋白质担当。',
+   ingredients:['豆腐','葱','姜','蒜','酱油','盐','糖','淀粉','食用油'],
+   steps:['豆腐切块，葱姜蒜切末','热油煎豆腐两面金黄','爆香葱姜蒜，加酱油、糖、水','下豆腐炖3分钟，水淀粉勾芡，撒葱花']},
+  {name:'蒜蓉粉丝蒸虾',icon:'🦐',meal:'晚餐',time:'20分钟',difficulty:'中等',servings:'2人份',
    desc:'宴客级的颜值菜，蒜香渗入粉丝和虾肉，鲜美翻倍。',
    ingredients:['虾','粉丝','蒜','葱','酱油','食用油','盐'],
    steps:['粉丝泡软铺底，虾开背去线摆在粉丝上','蒜末炒出香味浇在虾上','水开上锅蒸6分钟','淋酱油，撒葱花，浇热油']},
-  {name:'西红柿牛腩',icon:'🍅',time:'90分钟',difficulty:'中等',servings:'4人份',
+  {name:'西红柿牛腩',icon:'🍅',meal:'晚餐',time:'90分钟',difficulty:'中等',servings:'4人份',
    desc:'酸甜浓郁的硬菜，牛腩软烂入味，番茄汤汁拌饭绝配。',
    ingredients:['牛肉','番茄','土豆','洋葱','姜','番茄酱','盐','酱油','料酒'],
    steps:['牛腩切块焯水','爆香姜片，下牛腩、料酒、酱油翻炒','加水炖60分钟','下番茄块、土豆、洋葱、番茄酱炖20分钟，加盐']},
-  {name:'蛋花粥',icon:'粥',time:'40分钟',difficulty:'简单',servings:'2人份',
-   desc:'清淡养胃的早晚餐，蛋花滑嫩、米香浓郁。肠胃不适时的温柔抚慰。',
-   ingredients:['大米','鸡蛋','葱','盐','香油'],
-   steps:['大米淘净加水煮粥','鸡蛋打散','粥将好时淋入蛋液搅成蛋花','加盐、香油，撒葱花']},
-  {name:'土豆泥',icon:'🥔',time:'20分钟',difficulty:'简单',servings:'2人份',
+  {name:'麻婆豆腐',icon:'🌶️',meal:'午餐',time:'15分钟',difficulty:'中等',servings:'2人份',
+   desc:'川菜灵魂，麻辣鲜香烫，嫩豆腐裹着红油肉末，下饭天花板。',
+   ingredients:['豆腐','猪肉','蒜','姜','葱','酱油','盐','辣椒油','淀粉','豆瓣酱'],
+   steps:['豆腐切块焯水','肉末炒香加豆瓣酱炒红油','加水、酱油烧开下豆腐','水淀粉勾芡，淋辣椒油撒葱花']},
+  {name:'鱼香肉丝',icon:'🥢',meal:'午餐',time:'20分钟',difficulty:'中等',servings:'2人份',
+   desc:'没鱼却叫鱼香，酸甜咸辣鲜五味俱全，川菜馆必点。',
+   ingredients:['猪肉','木耳','胡萝卜','青椒','葱','姜','蒜','酱油','醋','糖','淀粉','豆瓣酱'],
+   steps:['猪肉切丝腌制，配菜切丝','调鱼香汁：酱油、醋、糖、淀粉、水','热油炒肉丝盛出','爆香豆瓣酱下配菜，倒回肉丝，淋鱼香汁']},
+  {name:'宫保鸡丁',icon:'🍗',meal:'午餐',time:'20分钟',difficulty:'中等',servings:'2人份',
+   desc:'川菜经典，鸡丁滑嫩花生酥脆，糊辣荔枝味型代表。',
+   ingredients:['鸡肉','花生','葱','姜','蒜','酱油','醋','糖','淀粉','豆瓣酱','料酒'],
+   steps:['鸡肉切丁腌制，花生炒熟','调汁：酱油、醋、糖、淀粉、水','热油炒鸡丁盛出','爆香葱姜蒜豆瓣酱，倒回鸡丁，淋汁撒花生']},
+  {name:'回锅肉',icon:'🥓',meal:'晚餐',time:'25分钟',difficulty:'中等',servings:'2人份',
+   desc:'川菜之首，五花肉肥而不腻，豆瓣酱香气直冲天灵盖。',
+   ingredients:['猪肉','蒜苗','青椒','姜','蒜','酱油','豆瓣酱','甜面酱','料酒'],
+   steps:['五花肉整块煮熟切薄片','热油煸肉片至卷曲出油','加豆瓣酱、甜面酱炒红','下蒜苗、青椒翻炒断生出锅']},
+  {name:'糖醋里脊',icon:'🍖',meal:'晚餐',time:'25分钟',difficulty:'中等',servings:'3人份',
+   desc:'外酥里嫩，酸甜可口，大人小孩都爱。',
+   ingredients:['猪肉','番茄酱','醋','糖','淀粉','鸡蛋','食用油','盐'],
+   steps:['猪肉切条加盐腌制','裹蛋液淀粉糊油炸至金黄','调糖醋汁：番茄酱、醋、糖、水','汁烧开下里脊翻匀']},
+  // ===== 汤品 =====
+  {name:'番茄蛋汤',icon:'🍅',meal:'汤品',time:'15分钟',difficulty:'简单',servings:'2人份',
+   desc:'暖胃快手汤，酸甜开胃。饭前来一碗，胃口大开。',
+   ingredients:['番茄','鸡蛋','葱','盐','香油','淀粉'],
+   steps:['番茄切小块，鸡蛋打散','水烧开下番茄煮3分钟','水淀粉勾芡，淋入蛋液成蛋花','加盐、香油，撒葱花']},
+  {name:'紫菜蛋花汤',icon:'🌊',meal:'汤品',time:'8分钟',difficulty:'简单',servings:'2人份',
+   desc:'10 分钟搞定的快手汤，紫菜补碘，蛋花滑嫩。',
+   ingredients:['紫菜','鸡蛋','葱','盐','香油','酱油'],
+   steps:['紫菜撕碎，鸡蛋打散','水烧开下紫菜煮1分钟','淋蛋液成蛋花','加盐、酱油、香油，撒葱花']},
+  {name:'冬瓜排骨汤',icon:'🍲',meal:'汤品',time:'60分钟',difficulty:'简单',servings:'3人份',
+   desc:'清热解暑的夏日靓汤，排骨软烂，冬瓜透明。',
+   ingredients:['排骨','冬瓜','姜','葱','盐','料酒'],
+   steps:['排骨冷水下锅焯水','加姜葱料酒炖40分钟','下冬瓜炖15分钟','加盐撒葱花']},
+  {name:'玉米排骨汤',icon:'🌽',meal:'汤品',time:'60分钟',difficulty:'简单',servings:'3人份',
+   desc:'清甜滋补，玉米的甜配排骨的鲜，全家老小都爱。',
+   ingredients:['排骨','玉米','胡萝卜','姜','葱','盐','料酒'],
+   steps:['排骨焯水','加姜葱炖40分钟','下玉米、胡萝卜炖20分钟','加盐调味']},
+  {name:'银耳莲子羹',icon:'🍯',meal:'汤品',time:'90分钟',difficulty:'简单',servings:'3人份',
+   desc:'润肺养颜的甜品汤，胶质浓稠，香甜滋润。',
+   ingredients:['银耳','莲子','红枣','枸杞','冰糖'],
+   steps:['银耳泡发撕小朵，莲子泡软','银耳莲子煮1小时至出胶','加红枣煮15分钟','加冰糖、枸杞煮5分钟']},
+  // ===== 凉菜 =====
+  {name:'黄瓜拌木耳',icon:'🥗',meal:'凉菜',time:'10分钟',difficulty:'简单',servings:'2人份',
+   desc:'清爽开胃的凉拌菜，脆嫩爽口，夏日必备。',
+   ingredients:['黄瓜','木耳','蒜','醋','盐','香油','辣椒油'],
+   steps:['木耳泡发焯水，黄瓜拍碎切段','蒜切末','所有调料拌匀','浇在黄瓜木耳上拌匀即可']},
+  {name:'凉拌西兰花',icon:'🥦',meal:'凉菜',time:'10分钟',difficulty:'简单',servings:'2人份',
+   desc:'低卡健康，蒜香清爽，减脂人群的最爱。',
+   ingredients:['西兰花','蒜','盐','香油','醋','生抽'],
+   steps:['西兰花掰小朵焯水1分钟过凉','蒜切末','加盐、醋、生抽、香油拌匀','浇在西兰花上']},
+  {name:'皮蛋豆腐',icon:'🍮',meal:'凉菜',time:'5分钟',difficulty:'简单',servings:'2人份',
+   desc:'5分钟搞定的夏日凉菜，冰凉嫩滑，下饭神器。',
+   ingredients:['豆腐','皮蛋','葱','蒜','酱油','香油','辣椒油'],
+   steps:['豆腐切块摆盘','皮蛋切丁铺豆腐上','蒜切末加酱油、香油、辣椒油调汁','浇汁撒葱花']},
+  {name:'凉拌土豆丝',icon:'🥔',meal:'凉菜',time:'15分钟',difficulty:'简单',servings:'2人份',
+   desc:'酸辣爽脆，开胃解腻，夏天必备。',
+   ingredients:['土豆','胡萝卜','蒜','葱','醋','辣椒油','盐','香油'],
+   steps:['土豆胡萝卜切细丝焯水过凉','蒜切末葱切花','加醋、辣椒油、盐、香油拌匀','撒葱花']},
+  // ===== 主食 =====
+  {name:'葱油饼',icon:'🫓',meal:'主食',time:'40分钟',difficulty:'中等',servings:'2人份',
+   desc:'层层酥脆，葱香四溢，早餐摊的灵魂在家复刻。',
+   ingredients:['面粉','葱','食用油','盐','温水'],
+   steps:['面粉加温水和成面团醒30分钟','擀开抹油撒葱花盐','卷起再擀圆','平底锅煎两面金黄']},
+  {name:'饺子',icon:'🥟',meal:'主食',time:'90分钟',difficulty:'中等',servings:'3人份',
+   desc:'中国人刻在 DNA 里的主食，团圆的象征。',
+   ingredients:['面粉','猪肉','白菜','葱','姜','酱油','盐','香油'],
+   steps:['和面醒30分钟','猪肉白菜葱姜剁碎调馅','擀皮包饺子','水开下饺子煮三开']},
+  {name:'蛋包饭',icon:'🍚',meal:'主食',time:'25分钟',difficulty:'中等',servings:'1人份',
+   desc:'日式经典，金黄蛋皮裹着番茄炒饭，颜值与美味并存。',
+   ingredients:['米饭','鸡蛋','番茄酱','洋葱','胡萝卜','猪肉','盐','食用油'],
+   steps:['洋葱胡萝卜猪肉切丁炒熟','加米饭番茄酱炒成炒饭','蛋液摊成薄饼','炒饭放中间，蛋皮对折包住']},
+  // ===== 小食 =====
+  {name:'土豆泥',icon:'🥔',meal:'小食',time:'20分钟',difficulty:'简单',servings:'2人份',
    desc:'绵密顺滑的西式配菜，黄油奶香浓郁。小朋友的最爱。',
    ingredients:['土豆','牛奶','盐','黄油','黑胡椒'],
    steps:['土豆去皮切块蒸熟','趁热压成泥','加黄油、牛奶、盐、黑胡椒搅匀','装盘即可']},
+  {name:'蒜蓉西兰花',icon:'🥦',meal:'小食',time:'8分钟',difficulty:'简单',servings:'2人份',
+   desc:'健康低脂的清肠菜，蒜香浓郁，翠绿爽口。',
+   ingredients:['西兰花','蒜','盐','食用油','蚝油'],
+   steps:['西兰花掰小朵焯水1分钟','蒜切末','热油爆香蒜末','下西兰花翻炒，加盐、蚝油出锅']},
+  {name:'炸薯条',icon:'🍟',meal:'小食',time:'30分钟',difficulty:'中等',servings:'2人份',
+   desc:'外酥里软，蘸番茄酱，追剧必备。',
+   ingredients:['土豆','食用油','盐','番茄酱'],
+   steps:['土豆切条泡水去淀粉','擦干水分','180度油炸至金黄','撒盐配番茄酱']},
+  {name:'可乐鸡翅',icon:'🍗',meal:'小食',time:'30分钟',difficulty:'简单',servings:'2人份',
+   desc:'甜咸交织，色泽红亮，懒人硬菜的代表。',
+   ingredients:['鸡翅','可乐','姜','葱','酱油','盐','料酒'],
+   steps:['鸡翅划刀焯水','煎至两面金黄','加酱油、可乐没过鸡翅','大火收汁撒葱花']},
 ];
 
 // 食材分类(用于快捷选择)
@@ -1327,6 +1414,7 @@ const commonIngredients=[
 
 function renderRecipe(){
   const selected=appData.recipeIngredients||[];
+  const mealTab=appData.recipeMealTab||'全部';
   let html=`<div class="card"><div class="card-header"><span class="card-title">🍳 食材找食谱</span><span style="font-size:12px;color:var(--text-light)">输入你有的食材</span></div>
     <div class="recipe-ingredient-input-row">
       <input class="input" id="recipeIngInput" placeholder="输入食材名，如：鸡蛋、番茄…" onkeydown="if(event.key==='Enter')addRecipeIngredient()">
@@ -1340,48 +1428,100 @@ function renderRecipe(){
     ${selected.length>0?`<button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="clearRecipeIngredients()">🗑️ 清空</button>`:''}
   </div>`;
 
+  // 食材一键搜多平台
+  if(selected.length>0){
+    const kw=encodeURIComponent(selected.join(' '));
+    const kwSingle=encodeURIComponent(selected[selected.length-1]);
+    html+=`<div class="card"><span class="card-sub">🔎 用这些食材一键搜其他平台菜谱</span></div>`;
+    html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">`;
+    RECIPE_PLATFORMS.forEach(p=>{
+      const url=p.url.replace('{kw}',kwSingle);
+      html+=`<a href="${url}" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;padding:10px 4px;background:var(--card);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);box-shadow:var(--shadow)">
+        <div style="font-size:22px">${p.icon}</div><div style="font-size:11px;font-weight:600;margin-top:3px">${p.name}</div></a>`;
+    });
+    html+=`</div>`;
+  }
+
+  // 分类筛选
+  html+=`<div class="card"><span class="card-sub">📂 按分类筛选</span></div>`;
+  html+=`<div class="job-tabs" style="margin-bottom:10px">`;
+  MEAL_TYPES.forEach(m=>{
+    const c=m==='全部'?recipeData.length:recipeData.filter(r=>r.meal===m).length;
+    html+=`<span class="job-tab ${mealTab===m?'active':''}" onclick="switchRecipeMeal('${m}')">${m}<span class="count">${c}</span></span>`;
+  });
+  html+=`</div>`;
+
   if(selected.length===0){
-    html+=`<div class="recipe-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">🍳</div><div style="font-size:13px">添加你的食材，看看能做什么菜吧！</div></div>`;
+    // 没选食材时按分类展示所有食谱
+    const list=mealTab==='全部'?recipeData:recipeData.filter(r=>r.meal===mealTab);
+    html+=`<div class="card"><span class="card-sub">📖 ${mealTab}（${list.length}道，点击查看做法）</span></div>`;
+    if(list.length===0){
+      html+=`<div class="recipe-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">🍳</div><div style="font-size:13px">该分类暂无食谱</div></div>`;
+    }else{
+      list.forEach(recipe=>{
+        html+=renderRecipeCard(recipe,null,mealTab);
+      });
+    }
   }else{
     const results=matchRecipes(selected);
-    if(results.length===0){
-      html+=`<div class="recipe-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">🤔</div><div style="font-size:13px">暂无匹配食谱，试试添加更多食材</div></div>`;
+    const filtered=mealTab==='全部'?results:results.filter(r=>r.recipe.meal===mealTab);
+    if(filtered.length===0){
+      html+=`<div class="recipe-empty"><div style="font-size:44px;margin-bottom:10px;opacity:.6">🤔</div><div style="font-size:13px">${mealTab==='全部'?'暂无匹配食谱':'该分类下暂无匹配食谱，试试其他分类'}</div></div>`;
     }else{
-      html+=`<div class="card"><span class="card-sub">找到 ${results.length} 个食谱（按匹配度排序）</span></div>`;
-      results.forEach(r=>{
-        const recipe=r.recipe;const matchCount=r.matchCount;const total=recipe.ingredients.length;
-        const matchPct=Math.round((matchCount/total)*100);
-        let badgeClass='recipe-match-low',badgeText='';
-        if(matchCount===total){badgeClass='recipe-match-full';badgeText='✓ 全部齐';}
-        else if(matchPct>=60){badgeClass='recipe-match-partial';badgeText=`差${total-matchCount}样`;}
-        else{badgeClass='recipe-match-low';badgeText=`差${total-matchCount}样`;}
-        html+=`<div class="recipe-result-card">
-          <div class="recipe-result-header">
-            <div class="recipe-result-name">${recipe.icon} ${recipe.name}</div>
-            <span class="recipe-match-badge ${badgeClass}">${badgeText}</span>
-          </div>
-          <div class="recipe-result-desc">${recipe.desc}</div>
-          <div class="recipe-ingredients-row">
-            <span style="font-size:11px;color:var(--text-light);width:100%;margin-bottom:2px">所需食材：</span>
-            ${recipe.ingredients.map(ing=>{
-              const have=selected.some(s=>s===ing||(s.includes(ing)||ing.includes(s)));
-              return `<span class="tag ${have?'recipe-ing-have tag-green':'recipe-ing-miss'}">${ing}</span>`;
-            }).join('')}
-          </div>
-          <div class="recipe-result-meta">
-            <span>⏱️ ${recipe.time}</span><span>📊 ${recipe.difficulty}</span><span>🍽️ ${recipe.servings}</span>
-            <span style="color:var(--green);font-weight:600">匹配 ${matchCount}/${total}</span>
-          </div>
-          <button class="btn btn-sm btn-outline" style="margin-top:10px" onclick="toggleRecipeSteps('${recipe.name.replace(/'/g,"\\'")}')">📖 查看做法</button>
-          <div id="steps_${recipe.name}" style="display:none;margin-top:10px;padding:10px;background:var(--green-light);border-radius:8px;font-size:13px;line-height:1.8">
-            ${recipe.steps.map((s,i)=>`<div><strong>${i+1}.</strong> ${s}</div>`).join('')}
-          </div>
-        </div>`;
+      html+=`<div class="card"><span class="card-sub">找到 ${filtered.length} 个食谱（按匹配度排序）</span></div>`;
+      filtered.forEach(r=>{
+        html+=renderRecipeCard(r.recipe,r,mealTab);
       });
     }
   }
   return html;
 }
+
+function renderRecipeCard(recipe,r,mealTab){
+  const selected=appData.recipeIngredients||[];
+  const matchCount=r?r.matchCount:null;
+  const total=recipe.ingredients.length;
+  let badgeHtml='';
+  if(matchCount!==null){
+    const matchPct=Math.round((matchCount/total)*100);
+    let badgeClass='recipe-match-low',badgeText='';
+    if(matchCount===total){badgeClass='recipe-match-full';badgeText='✓ 全部齐';}
+    else if(matchPct>=60){badgeClass='recipe-match-partial';badgeText=`差${total-matchCount}样`;}
+    else{badgeClass='recipe-match-low';badgeText=`差${total-matchCount}样`;}
+    badgeHtml=`<span class="recipe-match-badge ${badgeClass}">${badgeText}</span>`;
+  }
+  const safeName=recipe.name.replace(/'/g,"\\'");
+  let html=`<div class="recipe-result-card">
+    <div class="recipe-result-header">
+      <div class="recipe-result-name">${recipe.icon} ${recipe.name} <span style="font-size:10px;color:var(--text-light);font-weight:400">${recipe.meal||''}</span></div>
+      ${badgeHtml}
+    </div>
+    <div class="recipe-result-desc">${recipe.desc}</div>
+    <div class="recipe-ingredients-row">
+      <span style="font-size:11px;color:var(--text-light);width:100%;margin-bottom:2px">所需食材：</span>
+      ${recipe.ingredients.map(ing=>{
+        const have=selected.length>0&&selected.some(s=>s===ing||(s.includes(ing)||ing.includes(s)));
+        return `<span class="tag ${have?'recipe-ing-have tag-green':'recipe-ing-miss'}">${ing}</span>`;
+      }).join('')}
+    </div>
+    <div class="recipe-result-meta">
+      <span>⏱️ ${recipe.time}</span><span>📊 ${recipe.difficulty}</span><span>🍽️ ${recipe.servings}</span>
+      ${matchCount!==null?`<span style="color:var(--green);font-weight:600">匹配 ${matchCount}/${total}</span>`:''}
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-sm btn-outline" onclick="toggleRecipeSteps('${safeName}')">📖 做法</button>
+      <a class="btn btn-sm btn-outline" href="https://www.xiachufang.com/search/?keyword=${encodeURIComponent(recipe.name)}" target="_blank" rel="noopener" style="text-decoration:none">🍳 下厨房</a>
+      <a class="btn btn-sm btn-outline" href="https://www.douguo.com/search/recipe/${encodeURIComponent(recipe.name)}" target="_blank" rel="noopener" style="text-decoration:none">🥘 豆果</a>
+      <a class="btn btn-sm btn-outline" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(recipe.name+' 做法')}" target="_blank" rel="noopener" style="text-decoration:none">📺 B站</a>
+      <a class="btn btn-sm btn-outline" href="https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(recipe.name+' 做法')}" target="_blank" rel="noopener" style="text-decoration:none">📕 小红书</a>
+    </div>
+    <div id="steps_${recipe.name}" style="display:none;margin-top:10px;padding:10px;background:var(--green-light);border-radius:8px;font-size:13px;line-height:1.8">
+      ${recipe.steps.map((s,i)=>`<div><strong>${i+1}.</strong> ${s}</div>`).join('')}
+    </div>
+  </div>`;
+  return html;
+}
+function switchRecipeMeal(m){appData.recipeMealTab=m;saveData(appData);renderPage('recipe');}
 
 function matchRecipes(selected){
   const results=[];
