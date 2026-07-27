@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,6 +17,14 @@ ctx.fillStyle='#fff';ctx.font='bold 110px "PingFang SC","Microsoft YaHei",sans-s
 var u=c.toDataURL('image/png');
 var l=document.createElement('link');l.rel='apple-touch-icon';l.href=u;document.head.appendChild(l);
 var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;document.head.appendChild(f);})();
+</script>
+<script>
+(function(){
+  var v='1.0.0'; // 每次更新改这里，强制刷新缓存
+  var stored=localStorage.getItem('mei_app_version');
+  if(stored&&stored!==v){localStorage.setItem('mei_app_version',v);location.reload(true);}
+  else{localStorage.setItem('mei_app_version',v);}
+})();
 </script>
 <style>
 :root {
