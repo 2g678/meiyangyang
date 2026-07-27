@@ -811,24 +811,92 @@ function getTravelBg(icon){const map={'🏞️':'#e8f2eb','🍜':'#fef5e7','⛩�
 
 // ===== 每日荐书 =====
 const bookLibrary=[
-  {title:'九诗心',author:'黄晓丹',emoji:'📖',rating:9.2,summary:'本书以九位中国古代诗人的生命历程为线索——从屈原的孤绝、陶渊明的归隐，到杜甫的沉郁、苏轼的旷达——深入剖析诗歌背后的人性光辉与精神力量。',reason:'在焦虑蔓延的时代，这本书像一剂温柔的解药。黄晓丹不是教你"如何成功"，而是带你回到诗歌的源头，感受那些穿越千年的情感共鸣。',category:'中国文学'},
-  {title:'格外的活法',author:'[日] 吉井忍',emoji:'📗',rating:8.9,summary:'日本作家吉井忍走访了东京街头那些选择"非主流"生活方式的人们——凌晨三点开店的豆腐匠、坚持手写菜单的咖啡馆老板、拒绝智能手机的旧书店主。',reason:'当你被KPI追着跑、被社交媒体的焦虑裹挟时，这本书会让你停下来思考：人生真的只有一种标准答案吗？',category:'外国文学'},
-  {title:'看不见的中东',author:'姚璐',emoji:'📙',rating:9.0,summary:'战地记者姚璐深入中东十年，用第一手观察记录了伊拉克、叙利亚、阿富汗等地普通人的日常生活。书中没有宏大的政治叙事，而是聚焦于战争阴影下的人们如何买菜、上学、恋爱、做梦。',reason:'姚璐的文字克制而有力量，读完你会重新理解"和平"二字的分量。这是2025年最震撼人心的非虚构作品之一。',category:'社会纪实'},
-  {title:'要有光',author:'梁鸿',emoji:'📘',rating:8.8,summary:'继《中国在梁庄》后，梁鸿再次回到故乡，用十年时间追踪记录一个普通中国村庄的变迁。从留守儿童到空巢老人，从土地流转到乡村教育。',reason:'在城市化狂飙突进的时代，梁鸿帮我们记住了"回不去的故乡"。文字朴实无华却直击人心，2025年最值得中国人阅读的纪实文学。',category:'社会纪实'},
-  {title:'哲学家的最后一课',author:'朱锐',emoji:'📓',rating:9.1,summary:'身患绝症的哲学家朱锐，在生命的最后一年里，将病床变成了讲台。他用哲学的方式面对死亡——不是悲壮的抗争，而是平静的对话。',reason:'这是一本用生命写成的书。朱锐教授教会我们的不是"如何成功"，而是"如何面对终结"。读完你不会感到沉重，反而会获得一种奇异的平静。',category:'哲学'},
+  {title:'九诗心',author:'黄晓丹',emoji:'📖',rating:9.2,summary:'本书以九位中国古代诗人的生命历程为线索——从屈原的孤绝、陶渊明的归隐，到杜甫的沉郁、苏轼的旷达——深入剖析诗歌背后的人性光辉与精神力量。',reason:'在焦虑蔓延的时代，这本书像一剂温柔的解药。黄晓丹不是教你"如何成功"，而是带你回到诗歌的源头，感受那些穿越千年的情感共鸣。',category:'中国文学',tags:['诗歌','传记','治愈'],hot:true},
+  {title:'格外的活法',author:'[日] 吉井忍',emoji:'📗',rating:8.9,summary:'日本作家吉井忍走访了东京街头那些选择"非主流"生活方式的人们——凌晨三点开店的豆腐匠、坚持手写菜单的咖啡馆老板、拒绝智能手机的旧书店主。',reason:'当你被KPI追着跑、被社交媒体的焦虑裹挟时，这本书会让你停下来思考：人生真的只有一种标准答案吗？',category:'外国文学',tags:['日本','生活','随笔'],hot:true},
+  {title:'看不见的中东',author:'姚璐',emoji:'📙',rating:9.0,summary:'战地记者姚璐深入中东十年，用第一手观察记录了伊拉克、叙利亚、阿富汗等地普通人的日常生活。书中没有宏大的政治叙事，而是聚焦于战争阴影下的人们如何买菜、上学、恋爱、做梦。',reason:'姚璐的文字克制而有力量，读完你会重新理解"和平"二字的分量。这是2025年最震撼人心的非虚构作品之一。',category:'社会纪实',tags:['纪实','中东','战地'],hot:true},
+  {title:'要有光',author:'梁鸿',emoji:'📘',rating:8.8,summary:'继《中国在梁庄》后，梁鸿再次回到故乡，用十年时间追踪记录一个普通中国村庄的变迁。从留守儿童到空巢老人，从土地流转到乡村教育。',reason:'在城市化狂飙突进的时代，梁鸿帮我们记住了"回不去的故乡"。文字朴实无华却直击人心，2025年最值得中国人阅读的纪实文学。',category:'社会纪实',tags:['乡村','纪实','中国'],hot:false},
+  {title:'哲学家的最后一课',author:'朱锐',emoji:'📓',rating:9.1,summary:'身患绝症的哲学家朱锐，在生命的最后一年里，将病床变成了讲台。他用哲学的方式面对死亡——不是悲壮的抗争，而是平静的对话。',reason:'这是一本用生命写成的书。朱锐教授教会我们的不是"如何成功"，而是"如何面对终结"。读完你不会感到沉重，反而会获得一种奇异的平静。',category:'哲学',tags:['哲学','生死','治愈'],hot:true},
+  {title:'长安的荔枝',author:'马伯庸',emoji:'📕',rating:8.5,summary:'大唐天宝年间，九品小官李善德突然接到一个不可能完成的任务：从岭南将新鲜荔枝运到长安，给杨贵妃生日享用。荔枝"一日色变，二日香变，三日味变"，而岭南距长安五千余里。',reason:'马伯庸用一个小人物的视角写出了大唐盛世的另一面。紧张刺激的运输过程背后，是官场倾轧、人性挣扎。一口气读完的爽文。',category:'中国文学',tags:['历史','小说','马伯庸'],hot:true},
+  {title:'置身事内',author:'兰小欢',emoji:'📔',rating:9.0,summary:'复旦大学教授兰小欢用通俗的语言，讲透了中国经济的发展逻辑。从地方政府的事权与财权，到土地财政、产业政策、债务问题，把宏观经济的复杂脉络梳理得清清楚楚。',reason:'读懂这本书，你就读懂了中国过去30年为什么能这么发展，也大致能看懂未来的方向。不用经济学背景也能看懂。',category:'商业经济',tags:['经济','中国','科普'],hot:true},
+  {title:'月亮与六便士',author:'[英] 毛姆',emoji:'🌙',rating:8.7,summary:'伦敦证券经纪人思特里克兰德人到中年，突然抛妻弃子，远走他乡只为画画。他变得冷漠自私，却在塔希提岛创作出惊世杰作，最终双目失明、麻风病缠身地死在壁画前。',reason:'"满地都是六便士，他却抬头看见了月亮。"这是一本关于理想与现实的永恒之书。每个犹豫要不要追梦的人都该读。',category:'外国文学',tags:['经典','理想','毛姆'],hot:false},
+  {title:'献给阿尔吉侬的花束',author:'[美] 凯斯',emoji:'🌻',rating:9.1,summary:'查理是个智商只有68的智障男子，他自愿接受一项实验性手术，智商一路飙升到185。他第一次看清了世界的复杂、人性的丑陋，也第一次感受到了刻骨的孤独。然后，药效开始消退……',reason:'科幻外衣下最痛心的爱情与人性故事。当智障变天才再变回智障，你才会真正理解"理解"二字的残忍。读完会哭。',category:'科幻奇幻',tags:['科幻','人性','催泪'],hot:true},
+  {title:'被讨厌的勇气',author:'[日] 岸见一郎',emoji:'💪',rating:8.6,summary:'青年与哲人的五夜对话，揭开了阿德勒心理学的核心思想：一切烦恼都来自人际关系，自由就是被别人讨厌。',reason:'如果你总在迎合别人、活在别人的期待里，这本书会像一记耳光把你打醒。不是教你做坏人，而是教你做真实的自己。',category:'心理励志',tags:['心理学','阿德勒','成长'],hot:true},
+  {title:'原则',author:'[美] 瑞·达利欧',emoji:'⚖️',rating:8.3,summary:'桥水基金创始人达利欧用一生总结出的工作与生活原则。从"极度透明"到"创意择优"，他把决策过程变成可复制的算法。',reason:'不是鸡汤，是真·方法论。全球最大对冲基金创始人的实操手册，适合想认真做事的人反复读。',category:'商业经济',tags:['管理','决策','方法论'],hot:false},
+  {title:'活着',author:'余华',emoji:'🍂',rating:9.4,summary:'福贵从地主少爷输光家产开始，亲历父亲气死、母亲病死、儿子献血而死、女儿难产而死、妻子病逝、女婿事故、外孙撑死。最后只剩他和一头老牛。',reason:'余华用最克制的文字写最撕心裂肺的故事。读完你会重新理解"活着"二字的重量——活着本身就是意义。',category:'中国文学',tags:['余华','经典','苦难'],hot:true},
+  {title:'百年孤独',author:'[哥伦比亚] 马尔克斯',emoji:'🦋',rating:9.3,summary:'布恩迪亚家族七代人的兴衰史，在一个叫马孔多的小镇上演。从拓荒到繁荣，从战争到衰败，最终被一阵飓风从地球上抹去。',reason:'魔幻现实主义巅峰之作。读进去会迷路，但走出来后你会发现，所有家族、所有人类的命运都在这本书里。',category:'外国文学',tags:['经典','魔幻','诺贝尔'],hot:false},
+  {title:'人类简史',author:'[以] 赫拉利',emoji:'🌍',rating:9.1,summary:'从七万年前的认知革命，到农业革命、科学革命、未来革命。赫拉利用一本书讲完了智人如何从非洲草原走到食物链顶端，又将走向何方。',reason:'读完会有种"上帝视角"的恍惚感。这本书会彻底改变你看人类、看自己、看世界的方式。',category:'历史人文',tags:['历史','科普','颠覆'],hot:true},
+  {title:'三体',author:'刘慈欣',emoji:'🪐',rating:9.0,summary:'文革期间一次秘密信号泄露到宇宙，引来三体文明对地球的觊觎。从叶文洁的绝望抉择，到罗辑的黑暗森林法则，到程心的永恒漂流。',reason:'中国科幻的巅峰之作，奥巴马、扎克伯格都是粉丝。"黑暗森林法则"已成为讨论外星文明的标准框架。',category:'科幻奇幻',tags:['科幻','刘慈欣','硬核'],hot:true},
+  {title:'非暴力沟通',author:'[美] 卢森堡',emoji:'🕊️',rating:8.4,summary:'为什么相爱的人总是互相伤害？卢森堡博士提出"观察-感受-需要-请求"四步法，教你如何不带评判地表达，如何不带防御地倾听。',reason:'这本书会改变你说话的方式。读完后你会发现，90%的争吵其实都可以避免。适合所有在关系中受困的人。',category:'心理励志',tags:['沟通','关系','实用'],hot:false},
+  {title:'邓小平时代',author:'傅高义',emoji:'🏛️',rating:9.0,summary:'哈佛教授傅高义用十年时间，写就这部最权威的邓小平传记。从留法勤工俭学到改革开放总设计师，一个改变中国命运的人。',reason:'读懂邓小平，就读懂了中国过去40年的来路。客观、详实、宏大，是了解当代中国绕不开的书。',category:'历史人文',tags:['传记','中国','改革'],hot:false},
+  {title:'小王子',author:'[法] 圣埃克苏佩里',emoji:'🌹',rating:9.0,summary:'飞行员在撒哈拉沙漠遇到来自B612星球的小王子。小王子讲了他和玫瑰花的故事，讲了他访问六颗星球的见闻，讲了狐狸教他的"驯服"。',reason:'"重要的东西用眼睛是看不见的。"这本书10岁读和30岁读是完全不同的书。每个大人都曾经是孩子，但很少有人记得。',category:'外国文学',tags:['童话','经典','治愈'],hot:false},
 ];
+const BOOK_CATEGORIES=['全部','中国文学','外国文学','社会纪实','哲学','商业经济','科幻奇幻','心理励志','历史人文'];
 function getTodayBook(){const now=new Date();const dayOfYear=Math.floor((now-new Date(now.getFullYear(),0,0))/(1000*60*60*24));return bookLibrary[dayOfYear%bookLibrary.length];}
-function renderBook(){
-  const book=getTodayBook();const now=new Date();const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
-  return `<div class="card" style="text-align:center"><span class="tag tag-warm" style="font-size:12px;padding:5px 14px">📅 ${dateStr} 今日推荐</span></div>
-    <div class="book-hero"><div class="book-cover-area"><div class="book-cover-emoji">${book.emoji}</div><div class="book-info"><div class="book-name">${book.title}</div><div class="book-author">✍️ ${book.author} <span class="tag tag-warm">${book.category}</span></div><div class="book-rating"><span class="book-stars">★★★★★</span><span class="book-score">${book.rating}</span><span style="font-size:11px;color:var(--text-light)">豆瓣评分</span></div></div></div></div>
-    <div class="card"><div class="book-section"><div class="book-section-title">📖 内容概括</div><div class="book-section-content">${book.summary}</div></div></div>
-    <div class="card"><div class="book-section"><div class="book-section-title">💚 推荐理由</div><div class="book-section-content">${book.reason}</div></div></div>
-    <div class="book-actions"><button class="btn btn-green" onclick="window.open('https://book.douban.com/subject_search?search_text=${encodeURIComponent(book.title)}','_blank')">📚 豆瓣查看详情</button><button class="btn btn-outline" onclick="switchBook(-1)">👈 上一本</button><button class="btn btn-outline" onclick="switchBook(1)">👉 下一本</button></div>
-    <div class="book-history"><div class="book-history-title">📚 书库一览（点击切换）</div>${bookLibrary.map((b,i)=>`<div class="book-mini" onclick="switchToBook(${i})"><span class="book-mini-emoji">${b.emoji}</span><div class="book-mini-info"><div class="book-mini-name">${b.title}</div><div class="book-mini-author">${b.author} · 豆瓣 ${b.rating}</div></div><span style="color:var(--text-light)">→</span></div>`).join('')}</div>`;
+function getCurrentBook(){
+  const idx=appData.currentBookIndex;
+  if(typeof idx==='number'&&idx>=0&&idx<bookLibrary.length)return bookLibrary[idx];
+  return getTodayBook();
 }
-function switchBook(dir){const book=getTodayBook();const idx=bookLibrary.findIndex(b=>b.title===book.title);const newIdx=(idx+dir+bookLibrary.length)%bookLibrary.length;appData.currentBookIndex=newIdx;saveData(appData);renderPage('book');showToast(`已切换：${bookLibrary[newIdx].title}`);}
-function switchToBook(idx){appData.currentBookIndex=idx;saveData(appData);renderPage('book');showToast(`已切换：${bookLibrary[idx].title}`);}
+function renderBook(){
+  const book=getCurrentBook();
+  const now=new Date();const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  const isToday=bookLibrary.indexOf(book)===bookLibrary.indexOf(getTodayBook());
+  const tab=appData.bookTab||'all';
+  let html=`<div class="card" style="text-align:center"><span class="tag tag-warm" style="font-size:12px;padding:5px 14px">📅 ${dateStr} ${isToday?'今日推荐':'当前阅读'}</span></div>`;
+  // 当前书籍详情
+  html+=`<div class="book-hero"><div class="book-cover-area"><div class="book-cover-emoji">${book.emoji}</div><div class="book-info"><div class="book-name">${book.title}</div><div class="book-author">✍️ ${book.author} <span class="tag tag-warm">${book.category}</span>${book.hot?'<span class="tag" style="background:#ffebeb;color:#c94a4a;margin-left:4px">🔥 热门</span>':''}</div><div class="book-rating"><span class="book-stars">★★★★★</span><span class="book-score">${book.rating}</span><span style="font-size:11px;color:var(--text-light)">豆瓣评分</span></div></div></div></div>`;
+  // 标签
+  if(book.tags&&book.tags.length){
+    html+=`<div class="card" style="padding:10px 14px"><div style="display:flex;flex-wrap:wrap;gap:6px">${book.tags.map(t=>`<span class="tag" style="background:#f5f5f5;color:var(--text-mid)">#${t}</span>`).join('')}</div></div>`;
+  }
+  html+=`<div class="card"><div class="book-section"><div class="book-section-title">📖 内容概括</div><div class="book-section-content">${book.summary}</div></div></div>
+    <div class="card"><div class="book-section"><div class="book-section-title">💚 推荐理由</div><div class="book-section-content">${book.reason}</div></div></div>`;
+  // 翻页按钮 - 带上下本预览
+  const curIdx=bookLibrary.indexOf(book);
+  const prevIdx=(curIdx-1+bookLibrary.length)%bookLibrary.length;
+  const nextIdx=(curIdx+1)%bookLibrary.length;
+  html+=`<div class="card" style="padding:10px 14px">
+    <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:11px;color:var(--text-light)">
+      <div style="flex:1;text-align:center">👈 上一本<br><span style="color:var(--text);font-weight:600;font-size:12px">${bookLibrary[prevIdx].title}</span></div>
+      <div style="flex:1;text-align:center">👉 下一本<br><span style="color:var(--text);font-weight:600;font-size:12px">${bookLibrary[nextIdx].title}</span></div>
+    </div>
+    <div class="book-actions"><button class="btn btn-outline" onclick="switchBook(-1)">👈 上一本</button><button class="btn btn-green" onclick="window.open('https://book.douban.com/subject_search?search_text=${encodeURIComponent(book.title)}','_blank')">📚 豆瓣详情</button><button class="btn btn-outline" onclick="switchBook(1)">👉 下一本</button></div>
+  </div>`;
+  // 分类标签栏
+  html+=`<div class="card"><div class="book-history-title">📚 书库一览</div></div>`;
+  html+=`<div class="job-tabs" style="margin-bottom:10px">`;
+  BOOK_CATEGORIES.forEach(c=>{
+    const count=c==='全部'?bookLibrary.length:bookLibrary.filter(b=>b.category===c).length;
+    html+=`<span class="job-tab ${tab===c?'active':''}" onclick="switchBookTab('${c}')">${c}<span class="count">${count}</span></span>`;
+  });
+  html+=`</div>`;
+  // 热门榜
+  if(tab==='全部'){
+    const hotBooks=bookLibrary.filter(b=>b.hot);
+    html+=`<div class="card"><span class="card-sub">🔥 热门榜单（编辑推荐）</span></div>`;
+    hotBooks.forEach(b=>{
+      const i=bookLibrary.indexOf(b);
+      html+=`<div class="book-mini" onclick="switchToBook(${i})"><span class="book-mini-emoji">${b.emoji}</span><div class="book-mini-info"><div class="book-mini-name">${b.title} <span style="font-size:10px;color:var(--hot)">🔥</span></div><div class="book-mini-author">${b.author} · 豆瓣 ${b.rating} · ${b.category}</div></div><span style="color:var(--text-light)">→</span></div>`;
+    });
+  }
+  // 分类列表
+  const list=tab==='全部'?bookLibrary:bookLibrary.filter(b=>b.category===tab);
+  html+=`<div class="card" style="margin-top:8px"><span class="card-sub">📖 ${tab}（${list.length}本）</span></div>`;
+  list.forEach(b=>{
+    const i=bookLibrary.indexOf(b);
+    const isCur=i===curIdx;
+    html+=`<div class="book-mini" onclick="switchToBook(${i})" style="${isCur?'background:var(--green-light);border-left:3px solid var(--green)':''}"><span class="book-mini-emoji">${b.emoji}</span><div class="book-mini-info"><div class="book-mini-name">${b.title}${isCur?' <span style="font-size:10px;color:var(--green)">正在看</span>':''}</div><div class="book-mini-author">${b.author} · 豆瓣 ${b.rating}</div></div><span style="color:var(--text-light)">→</span></div>`;
+  });
+  return html;
+}
+function switchBook(dir){
+  const cur=getCurrentBook();
+  const idx=bookLibrary.findIndex(b=>b.title===cur.title);
+  const newIdx=(idx+dir+bookLibrary.length)%bookLibrary.length;
+  appData.currentBookIndex=newIdx;saveData(appData);renderPage('book');
+}
+function switchToBook(idx){appData.currentBookIndex=idx;saveData(appData);renderPage('book');}
+function switchBookTab(c){appData.bookTab=c;saveData(appData);renderPage('book');}
 
 // ===== 英语学习 =====
 const engArticles={
