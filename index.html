@@ -546,6 +546,59 @@ textarea.input { resize:vertical; min-height:70px; }
 .flight-price-tag-mid { background:#fff5e6; color:#b8813a; }
 .flight-price-tag-high { background:#ffebeb; color:#c94a4a; }
 
+/* 护肤日常 */
+.sk-hero { background:linear-gradient(135deg,#ffd6e0,#ffe5d6); border-radius:18px; padding:18px 16px;
+  margin-bottom:14px; position:relative; overflow:hidden; }
+.sk-hero::after { content:'✨'; position:absolute; top:14px; right:18px; font-size:24px; opacity:.7; }
+.sk-hero-title { font-size:18px; font-weight:700; color:#d63384; margin-bottom:4px; }
+.sk-hero-sub { font-size:13px; color:#b66885; line-height:1.6; }
+.sk-today-card { background:linear-gradient(135deg,#fff,#fff5f7); border:1.5px solid #ffd6e0;
+  border-radius:14px; padding:14px; margin-bottom:10px; }
+.sk-today-top { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+.sk-today-icon { font-size:32px; }
+.sk-today-info { flex:1; }
+.sk-today-name { font-size:16px; font-weight:700; color:#d63384; }
+.sk-today-sub { font-size:12px; color:#8c8c8c; margin-top:2px; }
+.sk-today-tip { font-size:13px; color:#5a5a5a; line-height:1.6; padding:8px 10px;
+  background:#fff5f7; border-radius:8px; margin-top:6px; }
+.sk-week-bar { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:10px; }
+.sk-week-day { background:var(--card); border:1.5px solid var(--border); border-radius:10px;
+  padding:8px 2px; text-align:center; cursor:pointer; transition:all .15s; min-height:60px;
+  display:flex; flex-direction:column; justify-content:space-between; }
+.sk-week-day:active { transform:scale(.96); }
+.sk-week-day.active { background:#ffd6e0; border-color:#d63384; }
+.sk-week-day.has-task { border-color:#d63384; }
+.sk-week-day-label { font-size:11px; color:var(--text-light); }
+.sk-week-day-date { font-size:13px; font-weight:600; }
+.sk-week-day-icons { font-size:13px; line-height:1.1; margin-top:3px; }
+.sk-timeline { position:relative; padding-left:24px; }
+.sk-timeline::before { content:''; position:absolute; left:7px; top:6px; bottom:6px; width:2px; background:#ffd6e0; }
+.sk-tl-item { position:relative; padding:8px 0 8px 16px; }
+.sk-tl-item::before { content:''; position:absolute; left:-22px; top:14px; width:12px; height:12px;
+  border-radius:50%; background:#d63384; box-shadow:0 0 0 3px #fff; }
+.sk-tl-item.rest::before { background:#c8a8d4; }
+.sk-tl-time { font-size:14px; font-weight:700; color:#d63384; }
+.sk-tl-content { font-size:13px; color:var(--text); margin-top:2px; line-height:1.5; }
+.sk-tl-content .emoji { margin-right:3px; }
+.sk-product-card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+  border:1px solid var(--border); box-shadow:var(--shadow); border-left:3px solid #d63384; }
+.sk-product-top { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.sk-product-icon { width:38px; height:38px; border-radius:10px; background:#ffd6e0; display:flex;
+  align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.sk-product-info { flex:1; min-width:0; }
+.sk-product-name { font-size:15px; font-weight:600; }
+.sk-product-freq { font-size:11px; color:var(--text-light); margin-top:1px; }
+.sk-product-actions { display:flex; gap:6px; }
+.sk-product-tag { padding:3px 8px; border-radius:8px; font-size:11px; font-weight:600; }
+.sk-tag-active { background:#ffd6e0; color:#d63384; }
+.sk-tag-pause { background:#f5f5f5; color:var(--text-light); }
+.sk-check-row { display:flex; align-items:center; gap:8px; margin-top:6px; padding-top:8px; border-top:1px dashed var(--border); }
+.sk-check-circle { width:24px; height:24px; border-radius:50%; border:2px solid #d63384; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:14px; color:#d63384;
+  flex-shrink:0; transition:all .15s; }
+.sk-check-circle.done { background:#d63384; color:#fff; }
+.sk-check-text { font-size:12px; color:var(--text-mid); }
+
 /* 打卡 */
 .checkin-calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
 .cal-day-header { text-align:center; font-size:11px; color:var(--text-light); padding:4px 0; }
@@ -640,7 +693,7 @@ const navItems=[
   {id:'inspire',label:'灵感每日推送',icon:'💡'},{id:'meme',label:'热梗追踪',icon:'🔥',badge:'HOT'},
   {id:'travel',label:'旅游攻略',icon:'✈️'},{id:'book',label:'每日荐书',icon:'📚'},
   {id:'english',label:'英语学习',icon:'🌍'},{id:'recipe',label:'食材找食谱',icon:'🍳'},
-  {id:'asset',label:'资产记账',icon:'💰'},{id:'game',label:'小游戏',icon:'🎮'},  {id:'job',label:'求职管理',icon:'💼'},{id:'flight',label:'特价机票',icon:'✈️'},{id:'checkin',label:'打卡记录',icon:'✅'},
+  {id:'asset',label:'资产记账',icon:'💰'},{id:'game',label:'小游戏',icon:'🎮'},  {id:'job',label:'求职管理',icon:'💼'},  {id:'flight',label:'特价机票',icon:'✈️'},{id:'skincare',label:'护肤日常',icon:'💄'},{id:'checkin',label:'打卡记录',icon:'✅'},
 ];
 let currentPage='home';
 
@@ -671,6 +724,7 @@ function renderPage(pageId){
     case 'game':main.innerHTML=renderGame();break;
     case 'job':main.innerHTML=renderJob();break;
     case 'flight':main.innerHTML=renderFlight();break;
+    case 'skincare':main.innerHTML=renderSkincare();break;
     case 'checkin':main.innerHTML=renderCheckin();break;
     default:main.innerHTML=renderHome();
   }
@@ -2564,6 +2618,237 @@ function delFlight(idx){
   showConfirm('删除这条记录？',()=>{const d=getFlightData();d.tracked.splice(idx,1);saveData(appData);renderPage('flight');showToast('已删除');});
 }
 function closeFlightModal(){document.getElementById('flightModal').classList.remove('open');}
+
+// ===== 护肤日常 =====
+const SK_DEFAULT=[
+  {id:'suan',name:'刷酸',icon:'🧪',freq:'3次/周',desc:'清理毛孔、代谢老废角质。建议晚上使用，注意防晒保湿。',purpose:'清洁',active:true,days:[]},
+  {id:'youtou',name:'上头油',icon:'💧',freq:'3次/周',desc:'涂抹头皮护理油，按摩促进头皮血液循环。',purpose:'头皮护理',active:true,days:[]},
+  {id:'mianmo',name:'面膜',icon:'🎭',freq:'3次/周',desc:'补水/修复/清洁面膜交替使用，给肌肤密集护理。',purpose:'密集护理',active:true,days:[]},
+  {id:'baoshi',name:'保湿',icon:'💦',freq:'每天',desc:'基础保湿不可少。早晚使用，保持肌肤水润。',purpose:'基础',active:true,days:[]},
+  {id:'fangshai',name:'防晒',icon:'☀️',freq:'每天',desc:'每天必涂防晒霜，防止光老化和色斑。',purpose:'防护',active:true,days:[]},
+  {id:'jinghua',name:'精华',icon:'✨',freq:'每天',desc:'针对性精华液，按肌肤问题选品。',purpose:'功效',active:false,days:[]},
+  {id:'yanye',name:'眼霜',icon:'👁️',freq:'每天',desc:'早晚涂抹眼霜，预防和改善眼部细纹。',purpose:'抗老',active:false,days:[]},
+];
+const SK_TIPS={
+  suan:'新手建议从低浓度（2%水杨酸/5%果酸）开始，每周1次建立耐受。注意：敏感肌和孕期慎用。',
+  youtou:'上头油推荐成分：迷迭香、霍霍巴油、生育酚。涂抹后用指腹按摩5分钟效果更佳。',
+  mianmo:'清洁面膜（泥土类）→ 补水面膜 → 功效面膜，循环使用。敷面膜时长控制在15-20分钟。',
+  baoshi:'爽肤水后立即涂抹精华液/面霜锁水。',
+  fangshai:'阴天也有紫外线，防晒要全年无休。出门前15分钟涂抹，每2小时补涂。',
+  jinghua:'维C精华建议早上用（提亮抗氧化），A醇/烟酰胺建议晚上用（避光）。',
+  yanye:'用无名指点涂，不要拉扯皮肤。',
+};
+function getSkData(){
+  if(!appData.skincare)appData.skincare={products:JSON.parse(JSON.stringify(SK_DEFAULT)),checks:{},routine:[]};
+  return appData.skincare;
+}
+function renderSkincare(){
+  const d=getSkData();
+  const products=d.products||[];
+  const checks=d.checks||{};
+  const today=new Date();
+  const todayKey=today.toISOString().slice(0,10);
+  const dayOfWeek=today.getDay(); // 0=周日
+  // 计算本月打卡统计
+  const monthKey=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+  let monthChecks=0;
+  Object.keys(checks).forEach(k=>{if(k.startsWith(monthKey))monthChecks++;});
+  const totalTasks=Object.keys(SK_DEFAULT).length;
+
+  let html=`<div class="sk-hero">
+    <div class="sk-hero-title">💄 护肤日常</div>
+    <div class="sk-hero-sub">${products.filter(p=>p.active).map(p=>`${p.name}${p.freq}`).join(' · ')}</div>
+  </div>`;
+
+  // 本月打卡统计
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+    <div class="job-stat-card" style="background:linear-gradient(135deg,#ffd6e0,#fff5f7);border-color:#ffd6e0"><div class="job-stat-num" style="color:#d63384">${monthChecks}</div><div class="job-stat-label">本月打卡</div></div>
+    <div class="job-stat-card"><div class="job-stat-num" style="color:#d63384">${products.filter(p=>p.active).length}</div><div class="job-stat-label">护肤项目</div></div>
+    <div class="job-stat-card"><div class="job-stat-num" style="color:#d63384">${d.routine?d.routine.length:0}</div><div class="job-stat-label">时间安排</div></div>
+  </div>`;
+
+  // 一周护肤日程
+  html+=`<div class="card"><span class="card-sub">📅 一周护肤日程（点击切换日期）</span></div>`;
+  html+=`<div class="sk-week-bar">`;
+  const dayLabels=['日','一','二','三','四','五','六'];
+  const todayDate=today.getDate();
+  // 计算本周从周一开始
+  const monday=new Date(today);monday.setDate(today.getDate()-((dayOfWeek+6)%7));
+  for(let i=0;i<7;i++){
+    const d2=new Date(monday);d2.setDate(monday.getDate()+i);
+    const dateKey=d2.toISOString().slice(0,10);
+    const isToday=d2.toDateString()===today.toDateString();
+    const dow=d2.getDay();
+    // 今日要做哪些:基于每天星期几+激活项目
+    const tasks=products.filter(p=>p.active&&(p.freq==='每天'||(p.days&&p.days.includes(dow))));
+    const icons=tasks.slice(0,3).map(t=>t.icon).join('');
+    const hasCheck=checks[dateKey]&&Object.keys(checks[dateKey]).length>0;
+    html+=`<div class="sk-week-day ${isToday?'active':''} ${hasCheck?'has-task':''}" onclick="showSkDayDetail('${dateKey}')">
+      <div class="sk-week-day-label">${dayLabels[dow]}</div>
+      <div class="sk-week-day-date">${d2.getDate()}</div>
+      <div class="sk-week-day-icons">${icons}${hasCheck?'<br>✓':''}</div>
+    </div>`;
+  }
+  html+=`</div>`;
+
+  // 今日护肤计划
+  const todayTasks=products.filter(p=>p.active&&(p.freq==='每天'||(p.days&&p.days.includes(dayOfWeek))));
+  if(todayTasks.length>0){
+    const mainTask=todayTasks[0];
+    html+=`<div class="card"><span class="card-sub">✨ 今日护肤计划</span></div>
+    <div class="sk-today-card">
+      <div class="sk-today-top">
+        <div class="sk-today-icon">${mainTask.icon}</div>
+        <div class="sk-today-info">
+          <div class="sk-today-name">${mainTask.name}</div>
+          <div class="sk-today-sub">${mainTask.purpose} · ${mainTask.freq}</div>
+        </div>
+      </div>
+      <div class="sk-today-tip">${SK_TIPS[mainTask.id]||mainTask.desc}</div>
+    </div>`;
+  }
+
+  // 晚间时间轴
+  if(d.routine&&d.routine.length>0){
+    html+=`<div class="card"><span class="card-sub">🌙 晚间时间轴</span></div>
+    <div class="card"><div class="sk-timeline">`;
+    d.routine.forEach((r,i)=>{
+      html+=`<div class="sk-tl-item ${i===d.routine.length-1?'rest':''}">
+        <div class="sk-tl-time">${r.time}</div>
+        <div class="sk-tl-content">${r.text}</div>
+      </div>`;
+    });
+    html+=`</div></div>
+    <button class="btn btn-outline" style="width:100%;margin-top:4px" onclick="openRoutineModal()">✏️ 编辑时间轴</button>`;
+  }else{
+    html+=`<button class="btn btn-green" style="width:100%;margin-bottom:12px" onclick="openRoutineModal()">+ 设置晚间时间轴</button>`;
+  }
+
+  // 今日打卡
+  html+=`<div class="card"><span class="card-sub">✅ 今日打卡（${Object.keys(checks[todayKey]||{}).length}/${products.filter(p=>p.active).length}）</span></div>`;
+  products.filter(p=>p.active).forEach(p=>{
+    const done=checks[todayKey]&&checks[todayKey][p.id];
+    html+=`<div class="sk-product-card">
+      <div class="sk-product-top">
+        <div class="sk-product-icon">${p.icon}</div>
+        <div class="sk-product-info">
+          <div class="sk-product-name">${p.name}</div>
+          <div class="sk-product-freq">${p.purpose} · ${p.freq}</div>
+        </div>
+        <div class="sk-product-actions">
+          <span class="sk-product-tag ${p.active?'sk-tag-active':'sk-tag-pause'}">${p.active?'进行中':'已暂停'}</span>
+        </div>
+      </div>
+      <div class="sk-check-row">
+        <div class="sk-check-circle ${done?'done':''}" onclick="toggleSkCheck('${p.id}')">${done?'✓':''}</div>
+        <div class="sk-check-text">${done?'今日已完成，太棒了！':'点击打卡完成'}</div>
+      </div>
+    </div>`;
+  });
+
+  // 管理按钮
+  html+=`<button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="openSkManageModal()">⚙️ 管理护肤项目（添加/删除/调整频次）</button>`;
+
+  // 模态框
+  html+=`<div class="asset-modal" id="skModal" onclick="if(event.target===this)closeSkModal()">
+    <div class="asset-modal-box" id="skModalBox"></div></div>`;
+  return html;
+}
+function toggleSkCheck(id){
+  const d=getSkData();const today=new Date().toISOString().slice(0,10);
+  if(!d.checks[today])d.checks[today]={};
+  if(d.checks[today][id])delete d.checks[today][id];
+  else d.checks[today][id]=Date.now();
+  saveData(appData);renderPage('skincare');
+}
+function showSkDayDetail(dateKey){
+  const d=getSkData();const checks=d.checks[dateKey]||{};
+  const products=d.products.filter(p=>p.active);
+  const date=new Date(dateKey);
+  const dayLabels=['日','一','二','三','四','五','六'];
+  const dow=date.getDay();
+  const tasks=products.filter(p=>p.freq==='每天'||(p.days&&p.days.includes(dow)));
+  const box=document.getElementById('skModalBox');
+  box.innerHTML=`<div class="asset-modal-title">📅 ${date.getMonth()+1}月${date.getDate()}日 周${dayLabels[dow]}</div>
+    <div style="font-size:13px;color:var(--text-light);margin-bottom:12px">该日计划：</div>
+    ${tasks.length===0?'<div style="text-align:center;color:var(--text-light);padding:14px">今天没有安排护肤</div>':
+      tasks.map(t=>{const done=checks[t.id];return `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:${done?'#fff5f7':'var(--card)'};border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+        <div style="font-size:22px">${t.icon}</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:14px">${t.name}</div>
+        <div style="font-size:11px;color:var(--text-light)">${t.purpose}</div></div>
+        <div style="color:${done?'#d63384':'#ccc'};font-size:18px">${done?'✓':'○'}</div>
+      </div>`;}).join('')}
+    <button class="btn btn-outline" style="width:100%;margin-top:14px" onclick="closeSkModal()">关闭</button>`;
+  document.getElementById('skModal').classList.add('open');
+}
+function openRoutineModal(){
+  const d=getSkData();const routine=d.routine||[];
+  const box=document.getElementById('skModalBox');
+  box.innerHTML=`<div class="asset-modal-title">🌙 编辑晚间时间轴</div>
+    <div style="font-size:12px;color:var(--text-light);margin-bottom:10px">每行一个安排，格式：时间 + 内容（如：22:00 拉伸运动）</div>
+    <textarea class="input" id="skRoutineInput" rows="10" placeholder="21:00 阅读时间 30分钟
+21:30 上头油
+22:00 拉伸运动
+22:15 护肤
+22:40 上床睡觉">${routine.map(r=>r.time+' '+r.text).join('\n')}</textarea>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-outline" style="flex:1" onclick="closeSkModal()">取消</button>
+      <button class="btn btn-green" style="flex:1" onclick="saveRoutine()">保存</button>
+    </div>`;
+  document.getElementById('skModal').classList.add('open');
+}
+function saveRoutine(){
+  const text=document.getElementById('skRoutineInput').value.trim();
+  const d=getSkData();d.routine=[];
+  text.split('\n').forEach(line=>{
+    const m=line.trim().match(/^(\d{1,2}:\d{2})\s+(.+)$/);
+    if(m)d.routine.push({time:m[1],text:m[2]});
+  });
+  if(d.routine.length===0){showToast('请按格式填写，至少1行');return;}
+  saveData(appData);closeSkModal();renderPage('skincare');showToast('已保存');
+}
+function openSkManageModal(){
+  const d=getSkData();const products=d.products||[];
+  const box=document.getElementById('skModalBox');
+  box.innerHTML=`<div class="asset-modal-title">⚙️ 管理护肤项目</div>
+    ${products.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+      <div style="font-size:22px">${p.icon}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:14px">${p.name}</div>
+      <div style="font-size:11px;color:var(--text-light)">${p.purpose} · ${p.freq}</div></div>
+      <button class="btn btn-sm" onclick="toggleSkActive(${i})" style="padding:5px 10px;font-size:11px;background:${p.active?'#ffd6e0;color:#d63384':'#f5f5f5;color:#999'}">${p.active?'进行中':'已暂停'}</button>
+      <button class="btn btn-sm btn-outline" onclick="removeSkProduct(${i})" style="padding:5px 10px;font-size:11px;color:var(--danger)">🗑️</button>
+    </div>`).join('')}
+    <div style="font-size:12px;color:var(--text-light);margin:12px 0 8px">添加新项目：</div>
+    <input class="input" id="newSkName" placeholder="项目名（如：眼霜）" style="margin-bottom:8px">
+    <input class="input" id="newSkIcon" placeholder="表情图标（如：👁️）" style="margin-bottom:8px">
+    <input class="input" id="newSkFreq" placeholder="频次（如：每天/3次/周）" style="margin-bottom:8px">
+    <input class="input" id="newSkPurpose" placeholder="分类（如：抗老）" style="margin-bottom:8px">
+    <button class="btn btn-green" style="width:100%;margin-top:4px" onclick="addSkProduct()">+ 添加</button>
+    <button class="btn btn-outline" style="width:100%;margin-top:10px" onclick="closeSkModal()">完成</button>`;
+  document.getElementById('skModal').classList.add('open');
+}
+function toggleSkActive(i){
+  const d=getSkData();d.products[i].active=!d.products[i].active;saveData(appData);
+  openSkManageModal();
+}
+function removeSkProduct(i){
+  showConfirm('删除这个护肤项目？',()=>{
+    const d=getSkData();d.products.splice(i,1);saveData(appData);
+    openSkManageModal();
+  });
+}
+function addSkProduct(){
+  const name=document.getElementById('newSkName').value.trim();
+  const icon=document.getElementById('newSkIcon').value.trim()||'✨';
+  const freq=document.getElementById('newSkFreq').value.trim()||'每天';
+  const purpose=document.getElementById('newSkPurpose').value.trim()||'其他';
+  if(!name){showToast('请填写项目名');return;}
+  const d=getSkData();
+  d.products.push({id:Date.now().toString(),name,icon,freq,purpose,active:true,desc:'',days:[]});
+  saveData(appData);
+  openSkManageModal();
+}
+function closeSkModal(){document.getElementById('skModal').classList.remove('open');}
 
 // ===== 打卡 =====
 function renderCheckin(){
