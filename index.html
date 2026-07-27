@@ -915,7 +915,24 @@ function renderBook(){
       <div style="flex:1;text-align:center">👈 上一本<br><span style="color:var(--text);font-weight:600;font-size:12px">${bookLibrary[prevIdx].title}</span></div>
       <div style="flex:1;text-align:center">👉 下一本<br><span style="color:var(--text);font-weight:600;font-size:12px">${bookLibrary[nextIdx].title}</span></div>
     </div>
-    <div class="book-actions"><button class="btn btn-outline" onclick="switchBook(-1)">👈 上一本</button><button class="btn btn-green" onclick="window.open('https://book.douban.com/subject_search?search_text=${encodeURIComponent(book.title)}','_blank')">📚 豆瓣详情</button><button class="btn btn-outline" onclick="switchBook(1)">👉 下一本</button></div>
+    <div class="book-actions"><button class="btn btn-outline" onclick="switchBook(-1)">👈 上一本</button><button class="btn btn-green" onclick="switchBook(1)">👉 下一本</button></div>
+  </div>`;
+  // 电子书阅读平台跳转
+  const encTitle=encodeURIComponent(book.title);
+  html+=`<div class="card"><div class="book-history-title">📖 在线阅读《${book.title}》</div></div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px">
+    <a href="https://weread.qq.com/web/search?keyword=${encTitle}" target="_blank" rel="noopener" class="job-platform-card" style="text-decoration:none;color:var(--text)">
+      <div class="job-platform-icon">📚</div><div class="job-platform-name">微信读书</div></a>
+    <a href="https://www.ximalaya.com/search/${encTitle}" target="_blank" rel="noopener" class="job-platform-card" style="text-decoration:none;color:var(--text)">
+      <div class="job-platform-icon">🎧</div><div class="job-platform-name">喜马拉雅</div></a>
+    <a href="https://read.douban.com/search?q=${encTitle}" target="_blank" rel="noopener" class="job-platform-card" style="text-decoration:none;color:var(--text)">
+      <div class="job-platform-icon">📕</div><div class="job-platform-name">豆瓣阅读</div></a>
+    <a href="https://fanqienovel.com/search/${encTitle}" target="_blank" rel="noopener" class="job-platform-card" style="text-decoration:none;color:var(--text)">
+      <div class="job-platform-icon">🍅</div><div class="job-platform-name">番茄小说</div></a>
+    <a href="https://book.douban.com/subject_search?search_text=${encTitle}" target="_blank" rel="noopener" class="job-platform-card" style="text-decoration:none;color:var(--text)">
+      <div class="job-platform-icon">⭐</div><div class="job-platform-name">豆瓣详情</div></a>
+    <a href="https://www.zhihu.com/search?q=${encTitle}" target="_blank" rel="noopener" class="job-platform-card" style="text-decoration:none;color:var(--text)">
+      <div class="job-platform-icon">💭</div><div class="job-platform-name">知乎书评</div></a>
   </div>`;
   // 分类标签栏
   html+=`<div class="card"><div class="book-history-title">📚 书库一览</div></div>`;
