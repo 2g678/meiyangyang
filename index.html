@@ -690,13 +690,13 @@ let appData=loadData();
 
 // ========== 导航 ==========
 const navItems=[
-  {id:'home',label:'首页',icon:'🏠'},{id:'plan',label:'每日计划',icon:'📋'},
+  {id:'plan',label:'每日计划',icon:'📋'},
   {id:'inspire',label:'灵感每日推送',icon:'💡'},{id:'meme',label:'热梗追踪',icon:'🔥',badge:'HOT'},
   {id:'travel',label:'旅游攻略',icon:'✈️'},{id:'book',label:'每日荐书',icon:'📚'},
   {id:'english',label:'英语学习',icon:'🌍'},{id:'recipe',label:'食材找食谱',icon:'🍳'},
-  {id:'asset',label:'资产记账',icon:'💰'},{id:'game',label:'小游戏',icon:'🎮'},  {id:'job',label:'求职管理',icon:'💼'},  {id:'flight',label:'特价机票',icon:'✈️'},{id:'skincare',label:'护肤日常',icon:'💄'},{id:'checkin',label:'打卡记录',icon:'✅'},
+  {id:'asset',label:'资产记账',icon:'💰'},  {id:'job',label:'求职管理',icon:'💼'},  {id:'flight',label:'特价机票',icon:'✈️'},{id:'skincare',label:'护肤日常',icon:'💄'},{id:'checkin',label:'打卡记录',icon:'✅'},
 ];
-let currentPage='home';
+let currentPage='plan';
 
 function buildSidebar(){
   document.getElementById('sidebarNav').innerHTML=navItems.map(item=>`
