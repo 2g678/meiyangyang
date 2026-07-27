@@ -20,7 +20,7 @@ var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;do
 </script>
 <script>
 (function(){
-  var v='2.2.0'; // 每次更新改这里
+  var v='2.3.0'; // 每次更新改这里
   var stored=localStorage.getItem('mei_app_version');
   var key='mei_reload_'+v;
   // 版本变化时强制刷新一次:带时间戳参数让缓存失效
@@ -182,9 +182,11 @@ textarea.input { resize:vertical; min-height:70px; }
 .plan-progress { height:4px; background:#eee; border-radius:2px; margin-top:10px; overflow:hidden; }
 .plan-progress-bar { height:100%; background:var(--green); border-radius:2px; transition:width .3s; }
 .plan-time { font-size:11px; color:var(--green); background:var(--green-light); padding:2px 7px; border-radius:8px;
-  flex-shrink:0; font-weight:600; white-space:nowrap; }
+  flex-shrink:0; font-weight:600; white-space:nowrap; line-height:1.5; text-align:center; }
+.plan-time .pt-date { display:block; font-size:10px; opacity:.85; }
+.plan-time .pt-clock { display:block; font-size:12px; }
 .plan-time.done { color:var(--text-light); background:#f0f0f0; text-decoration:line-through; }
-.plan-input-row .time-input { width:90px; font-size:12px; padding:8px 6px; }
+.plan-input-row .time-input { width:140px; font-size:12px; padding:8px 6px; flex-shrink:0; }
 .plan-content { flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
 .plan-text { font-size:13px; }
 .plan-text.done { text-decoration:line-through; color:var(--text-light); }
@@ -759,6 +761,21 @@ function renderPage(pageId){
 }
 
 // ===== 每日计划 =====
+function fmtPlanTime(dt){
+  // dt 格式: "2026-07-28T14:30" → {date:"7/28", clock:"14:30", full:"7月28日 14:30"}
+  if(!dt) return null;
+  const m=dt.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if(!m) return null;
+  const mon=parseInt(m[2],10), day=parseInt(m[3],10), hh=m[4], mm=m[5];
+  const today=new Date(); const isToday=today.getFullYear()==+m[1]&&(today.getMonth()+1)==mon&&today.getDate()==day;
+  const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
+  const isTomorrow=tomorrow.getFullYear()==+m[1]&&(tomorrow.getMonth()+1)==mon&&tomorrow.getDate()==day;
+  let dateStr;
+  if(isToday) dateStr='今天';
+  else if(isTomorrow) dateStr='明天';
+  else dateStr=`${mon}/${day}`;
+  return {date:dateStr, clock:`${hh}:${mm}`, full:`${mon}月${day}日 ${hh}:${mm}`, sortKey:dt};
+}
 function renderPlan(){
   const plans=appData.plans;const doneCount=plans.filter(p=>p.done).length;
   const progress=plans.length>0?Math.round((doneCount/plans.length)*100):0;
@@ -769,12 +786,12 @@ function renderPlan(){
     if(b.time) return 1;
     return 0;
   });
-  let html=`<div class="card"><div class="card-header"><span class="card-title">📋 今日计划</span><span class="card-sub">${doneCount}/${plans.length} 已完成</span></div><div class="plan-progress"><div class="plan-progress-bar" style="width:${progress}%"></div></div></div><div class="plan-input-row"><input class="input time-input" id="planTimeInput" type="time" title="选择时间（可选）"><input class="input" id="planInput" placeholder="添加新计划..." onkeydown="if(event.key==='Enter')addPlan()"><button class="btn btn-green" onclick="addPlan()">添加</button></div>`;
+  let html=`<div class="card"><div class="card-header"><span class="card-title">📋 计划日程</span><span class="card-sub">${doneCount}/${plans.length} 已完成</span></div><div class="plan-progress"><div class="plan-progress-bar" style="width:${progress}%"></div></div></div><div class="plan-input-row"><input class="input time-input" id="planTimeInput" type="datetime-local" title="选择日期和时间（可选）"><input class="input" id="planInput" placeholder="添加新计划..." onkeydown="if(event.key==='Enter')addPlan()"><button class="btn btn-green" onclick="addPlan()">添加</button></div>`;
   if(sorted.length===0){html+=`<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">还没有计划，添加一个吧</div></div>`;}
-  else{sorted.forEach(p=>{html+=`<div class="plan-item">${p.time?`<span class="plan-time${p.done?' done':''}">${p.time}</span>`:''}<div class="plan-check${p.done?' done':''}" onclick="togglePlan(${p.id})">✓</div><span class="plan-text${p.done?' done':''}">${escapeHTML(p.text)}</span><button class="plan-del" onclick="deletePlan(${p.id})">×</button></div>`;});}
+  else{sorted.forEach(p=>{const tf=p.time?fmtPlanTime(p.time):null;html+=`<div class="plan-item">${tf?`<span class="plan-time${p.done?' done':''}" title="${tf.full}"><span class="pt-date">${tf.date}</span><span class="pt-clock">${tf.clock}</span></span>`:''}<div class="plan-check${p.done?' done':''}" onclick="togglePlan(${p.id})">✓</div><span class="plan-text${p.done?' done':''}">${escapeHTML(p.text)}</span><button class="plan-del" onclick="deletePlan(${p.id})">×</button></div>`;});}
   return html;
 }
-function addPlan(){const input=document.getElementById('planInput');const timeInput=document.getElementById('planTimeInput');const text=input.value.trim();if(!text){showToast('请输入计划内容');return;}const time=timeInput.value||'';appData.plans.unshift({id:appData.planIdCounter++,text,done:false,time});saveData(appData);input.value='';timeInput.value='';renderPage('plan');showToast(time?`已添加 ${time} 的计划 ✓`:'计划已添加 ✓');}
+function addPlan(){const input=document.getElementById('planInput');const timeInput=document.getElementById('planTimeInput');const text=input.value.trim();if(!text){showToast('请输入计划内容');return;}const time=timeInput.value||'';appData.plans.unshift({id:appData.planIdCounter++,text,done:false,time});saveData(appData);input.value='';timeInput.value='';renderPage('plan');showToast(time?`已添加计划 ✓`:'计划已添加 ✓');}
 function togglePlan(id){const plan=appData.plans.find(p=>p.id===id);if(plan){plan.done=!plan.done;saveData(appData);renderPage('plan');}}
 function deletePlan(id){appData.plans=appData.plans.filter(p=>p.id!==id);saveData(appData);renderPage('plan');showToast('计划已删除');}
 
