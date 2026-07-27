@@ -20,10 +20,20 @@ var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;do
 </script>
 <script>
 (function(){
-  var v='1.0.0'; // 每次更新改这里，强制刷新缓存
+  var v='2.1.0'; // 每次更新改这里
   var stored=localStorage.getItem('mei_app_version');
-  if(stored&&stored!==v){localStorage.setItem('mei_app_version',v);location.reload(true);}
-  else{localStorage.setItem('mei_app_version',v);}
+  var key='mei_reload_'+v;
+  // 版本变化时强制刷新一次:带时间戳参数让缓存失效
+  if(stored!==v || !sessionStorage.getItem(key)){
+    sessionStorage.setItem(key,'1');
+    localStorage.setItem('mei_app_version',v);
+    var sep=location.href.indexOf('?')>=0?'&':'?';
+    // 去掉旧的 _t 参数再加新的
+    var cleanHref=location.href.split('?')[0].split('#')[0];
+    location.replace(cleanHref+sep+'_t='+Date.now());
+    return;
+  }
+  localStorage.setItem('mei_app_version',v);
 })();
 </script>
 <style>
@@ -724,7 +734,6 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 function renderPage(pageId){
   const main=document.getElementById('mainContent');
   switch(pageId){
-    case 'home':main.innerHTML=renderHome();break;
     case 'plan':main.innerHTML=renderPlan();break;
     case 'inspire':main.innerHTML=renderInspire();break;
     case 'meme':main.innerHTML=renderMeme();break;
@@ -738,42 +747,8 @@ function renderPage(pageId){
     case 'flight':main.innerHTML=renderFlight();break;
     case 'skincare':main.innerHTML=renderSkincare();break;
     case 'checkin':main.innerHTML=renderCheckin();break;
-    default:main.innerHTML=renderHome();
+    default:main.innerHTML=renderPlan();
   }
-}
-
-// ===== 首页 =====
-function renderHome(){
-  const now=new Date();const hours=now.getHours();
-  const greeting=hours<6?'夜深了':hours<12?'早上好':hours<18?'下午好':'晚上好';
-  const days=['日','一','二','三','四','五','六'];
-  const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${days[now.getDay()]}`;
-  const quotes=['创作是灵魂的呼吸，每一次输出都是成长的印记 ✨','灵感不在远方，就在你认真生活的每个瞬间 🌿','追踪热梗、读书旅行、学好英语——每天都是新的冒险 🚀'];
-  const quote=quotes[Math.floor(Math.random()*quotes.length)];
-  const planDone=appData.plans.filter(p=>p.done).length;const planTotal=appData.plans.length;
-  const checkinCount=Object.keys(appData.checkins).length;const streak=calcStreak();
-  return `
-    <div class="hero-card"><div class="hero-date">${dateStr}</div><div class="hero-greeting">${greeting}，美羊羊 👋</div><div class="hero-quote">${quote}</div></div>
-    <div class="quick-actions">
-      <div class="quick-action" onclick="switchPage('meme')"><span class="quick-action-icon">🔥</span><span class="quick-action-label">热梗追踪</span></div>
-      <div class="quick-action" onclick="switchPage('book')"><span class="quick-action-icon">📚</span><span class="quick-action-label">每日荐书</span></div>
-      <div class="quick-action" onclick="switchPage('english')"><span class="quick-action-icon">🌍</span><span class="quick-action-label">英语学习</span></div>
-      <div class="quick-action" onclick="switchPage('travel')"><span class="quick-action-icon">✈️</span><span class="quick-action-label">旅游攻略</span></div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num">${planDone}/${planTotal}</div><div class="stat-label">今日计划完成</div></div>
-      <div class="stat-card"><div class="stat-num">🔥 ${streak}</div><div class="stat-label">连续打卡天数</div></div>
-      <div class="stat-card"><div class="stat-num">${checkinCount}</div><div class="stat-label">累计打卡</div></div>
-      <div class="stat-card"><div class="stat-num">${getTodayBook().title.slice(0,6)}…</div><div class="stat-label">今日荐书</div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">📌 今日速览</span></div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button class="btn btn-hot btn-block" onclick="switchPage('meme')">🔥 查看今日热梗 — ${memeData.all[0]?.title||'回答我'}</button>
-        <button class="btn btn-green btn-block" onclick="switchPage('english')">🌍 英语30分钟盲听练习</button>
-        <button class="btn btn-outline btn-block" onclick="switchPage('checkin')">✅ 立即打卡</button>
-      </div>
-    </div>`;
 }
 
 // ===== 每日计划 =====
@@ -2918,7 +2893,7 @@ function toggleCheckinDay(key){if(appData.checkins[key]){delete appData.checkins
 function escapeHTML(str){const div=document.createElement('div');div.textContent=str;return div.innerHTML;}
 
 // ========== 初始化 ==========
-function init(){buildSidebar();renderPage('home');}
+function init(){buildSidebar();renderPage('plan');}
 init();
 </script>
 </body>
