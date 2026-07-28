@@ -20,7 +20,7 @@ var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;do
 </script>
 <script>
 (function(){
-  var v='2.4.0'; // 每次更新改这里
+  var v='2.4.1'; // 每次更新改这里
   var stored=localStorage.getItem('mei_app_version');
   var key='mei_reload_'+v;
   // 版本变化时强制刷新一次:带时间戳参数让缓存失效
@@ -1256,26 +1256,55 @@ function renderEnglish(){
 
 function switchEngSubTab(tab){appData.engSubTab=tab;saveData(appData);renderPage('english');}
 function switchEngLevel(level){appData.engLevel=level;saveData(appData);renderPage('english');showToast(`已切换至${level==='beginner'?'初级':level==='intermediate'?'中级':'高级'}水平`);}
+// 语音引擎初始化（iOS Safari 必须先触发一次）
+let _voicesReady=false;
+function initVoices(){
+  if(!('speechSynthesis' in window))return;
+  const v=window.speechSynthesis.getVoices();
+  if(v&&v.length>0){_voicesReady=true;}
+}
+if('speechSynthesis' in window){
+  initVoices();
+  window.speechSynthesis.onvoiceschanged=()=>{_voicesReady=true;initVoices();};
+}
+function _pickEnVoice(){
+  if(!('speechSynthesis' in window))return null;
+  const voices=window.speechSynthesis.getVoices()||[];
+  // 优先 en-US，其次任意 en
+  return voices.find(v=>/en[-_]US/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||null;
+}
 function speak(text){
   if(!('speechSynthesis' in window)){showToast('浏览器不支持朗读');return;}
+  // iOS 首次需要 resume
+  if(window.speechSynthesis.paused){window.speechSynthesis.resume();}
   window.speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
-  u.lang='en-US';u.rate=appData.playSpeed||1.0;
-  window.speechSynthesis.speak(u);
+  u.lang='en-US';
+  u.rate=appData.playSpeed||0.9;
+  const v=_pickEnVoice();
+  if(v){u.voice=v;}
+  u.onerror=(e)=>{showToast('朗读失败，请稍后再试');};
+  // iOS 兼容：延迟一帧调用
+  setTimeout(()=>{window.speechSynthesis.speak(u);if(window.speechSynthesis.paused){window.speechSynthesis.resume();}},50);
 }
 function speakAlphabet(){
   if(!('speechSynthesis' in window)){showToast('浏览器不支持朗读');return;}
+  if(window.speechSynthesis.paused){window.speechSynthesis.resume();}
   window.speechSynthesis.cancel();
   const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const v=_pickEnVoice();
   let i=0;
   const next=()=>{
     if(i>=L.length)return;
     const u=new SpeechSynthesisUtterance(L[i]);
     u.lang='en-US';u.rate=0.8;
-    u.onend=()=>{i++;setTimeout(next,200);};
+    if(v){u.voice=v;}
+    u.onend=()=>{i++;setTimeout(next,250);};
+    u.onerror=()=>{i++;setTimeout(next,250);};
     window.speechSynthesis.speak(u);
+    if(window.speechSynthesis.paused){window.speechSynthesis.resume();}
   };
-  next();
+  setTimeout(next,50);
 }
 function toggleRoadmap(idx){
   const steps=appData.engRoadmap||[false,false,false,false,false,false,false,false];
@@ -1363,14 +1392,16 @@ function playSentence(idx){
   document.getElementById('playbarSentence').textContent=`第 ${idx+1}/${currentArticle.sentences.length} 句`;
   document.getElementById('playbarProgress').style.width=`${((idx+1)/currentArticle.sentences.length)*100}%`;
   document.getElementById('playbar').classList.add('active');
-  // 使用Web Speech API朗读
   if('speechSynthesis' in window){
+    if(window.speechSynthesis.paused){window.speechSynthesis.resume();}
     window.speechSynthesis.cancel();
     const utter=new SpeechSynthesisUtterance(s.en);
     utter.lang='en-US';
-    utter.rate=appData.playSpeed||1.0;
+    utter.rate=appData.playSpeed||0.9;
+    const v=_pickEnVoice();if(v){utter.voice=v;}
+    utter.onerror=()=>{showToast('朗读失败，请稍后再试');};
     utter.onend=()=>{document.getElementById('playPauseBtn').textContent='▶';appData.playPlaying=false;saveData(appData);};
-    window.speechSynthesis.speak(utter);
+    setTimeout(()=>{window.speechSynthesis.speak(utter);if(window.speechSynthesis.paused){window.speechSynthesis.resume();}},50);
     document.getElementById('playPauseBtn').textContent='⏸';
     appData.playPlaying=true;saveData(appData);
   }else{
