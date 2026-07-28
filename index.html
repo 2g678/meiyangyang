@@ -20,7 +20,7 @@ var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;do
 </script>
 <script>
 (function(){
-  var v='2.4.1'; // 每次更新改这里
+  var v='2.4.2'; // 每次更新改这里
   var stored=localStorage.getItem('mei_app_version');
   var key='mei_reload_'+v;
   // 版本变化时强制刷新一次:带时间戳参数让缓存失效
@@ -319,7 +319,9 @@ textarea.input { resize:vertical; min-height:70px; }
   box-shadow:var(--shadow); cursor:pointer; transition:all .15s;
 }
 .vocab-card:active { transform:scale(.97); background:var(--green-light); }
-.vocab-word { font-size:15px; font-weight:600; color:var(--green-dark); }
+.vocab-word { font-size:15px; font-weight:600; color:var(--green-dark); display:flex; align-items:center; justify-content:space-between; }
+.vocab-speak { font-size:16px; cursor:pointer; margin-left:6px; opacity:.7; }
+.vocab-speak:active { opacity:1; transform:scale(1.2); }
 .vocab-phonetic { font-size:11px; color:var(--text-light); margin-top:2px; }
 .vocab-meaning { font-size:12px; color:var(--text-light); margin-top:4px; }
 /* 零基础学习路径 */
@@ -1237,7 +1239,7 @@ function renderEnglish(){
       <button class="eng-tab${level==='intermediate'?' active':''}" onclick="switchEngLevel('intermediate')">🌿 中级</button>
       <button class="eng-tab${level==='advanced'?' active':''}" onclick="switchEngLevel('advanced')">🌳 高级</button>
     </div><p style="font-size:12px;color:var(--text-light)">💡 点击单词查看发音和例句，点击"开始练习"进入单词训练</p></div>`;
-    html+=`<div class="vocab-grid">${words.map((w,i)=>`<div class="vocab-card" onclick="showVocabDetail(${i})"><div class="vocab-word">${w.word}</div><div class="vocab-phonetic">${w.phonetic}</div><div class="vocab-meaning">${w.meaning}</div></div>`).join('')}</div>`;
+    html+=`<div class="vocab-grid">${words.map((w,i)=>`<div class="vocab-card"><div class="vocab-word">${w.word}<span class="vocab-speak" onclick="showVocabDetail(${i});event.stopPropagation();">🔊</span></div><div class="vocab-phonetic">${w.phonetic}</div><div class="vocab-meaning">${w.meaning}</div></div>`).join('')}</div>`;
     html+=`<button class="btn btn-green btn-block" style="margin-top:12px" onclick="startVocabPractice()">📝 开始单词练习</button>`;
   }else if(subTab==='passages'){
     const level=appData.engLevel||'intermediate';
@@ -1275,6 +1277,8 @@ function _pickEnVoice(){
 }
 function speak(text){
   if(!('speechSynthesis' in window)){showToast('浏览器不支持朗读');return;}
+  // iOS Safari 首次可能没加载 voice，强制触发一次
+  if(!_voicesReady){initVoices();window.speechSynthesis.getVoices();}
   // iOS 首次需要 resume
   if(window.speechSynthesis.paused){window.speechSynthesis.resume();}
   window.speechSynthesis.cancel();
@@ -1319,7 +1323,11 @@ function showVocabDetail(idx){
   const level=appData.engLevel||'intermediate';
   const words=vocabData[level]||vocabData.intermediate;
   const w=words[idx];
+  if(!w)return;
+  speak(w.word);
   showToast(`${w.word} ${w.phonetic} — ${w.meaning}`);
+  // 延迟朗读例句
+  setTimeout(()=>speak(w.example), 1200);
 }
 
 // ===== 阅读器 =====
