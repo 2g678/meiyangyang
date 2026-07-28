@@ -20,7 +20,7 @@ var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;do
 </script>
 <script>
 (function(){
-  var v='2.3.0'; // 每次更新改这里
+  var v='2.4.0'; // 每次更新改这里
   var stored=localStorage.getItem('mei_app_version');
   var key='mei_reload_'+v;
   // 版本变化时强制刷新一次:带时间戳参数让缓存失效
@@ -322,6 +322,32 @@ textarea.input { resize:vertical; min-height:70px; }
 .vocab-word { font-size:15px; font-weight:600; color:var(--green-dark); }
 .vocab-phonetic { font-size:11px; color:var(--text-light); margin-top:2px; }
 .vocab-meaning { font-size:12px; color:var(--text-light); margin-top:4px; }
+/* 零基础学习路径 */
+.roadmap-step { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px; border:1px solid var(--border); border-left:4px solid var(--green); position:relative; }
+.roadmap-step.done { border-left-color:#aaa; opacity:.7; }
+.roadmap-step-num { position:absolute; right:14px; top:14px; font-size:24px; font-weight:800; color:var(--green-light); }
+.roadmap-step-title { font-size:14px; font-weight:600; margin-bottom:4px; padding-right:30px; }
+.roadmap-step-desc { font-size:12px; color:var(--text-mid); line-height:1.6; margin-bottom:8px; }
+.roadmap-step-actions { display:flex; gap:6px; flex-wrap:wrap; }
+.roadmap-tip { background:linear-gradient(135deg,#fff8e6,#fef5d8); border-radius:var(--radius); padding:12px 14px; margin-bottom:10px; border:1px solid #f0e0b0; font-size:12px; color:var(--text-mid); line-height:1.6; }
+/* 字母卡片 */
+.alpha-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.alpha-card { background:var(--card); border-radius:var(--radius-sm); padding:12px 6px; text-align:center; border:1px solid var(--border); cursor:pointer; transition:all .15s; }
+.alpha-card:active { transform:scale(.92); background:var(--green-light); }
+.alpha-letter { font-size:22px; font-weight:800; color:var(--green-dark); }
+.alpha-phonetic { font-size:10px; color:var(--text-light); margin-top:2px; }
+.alpha-speak { font-size:18px; margin-top:4px; }
+/* 对话场景 */
+.dialog-scene { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px; border:1px solid var(--border); }
+.dialog-scene-title { font-size:14px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.dialog-line { display:flex; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); align-items:flex-start; }
+.dialog-line:last-child { border-bottom:none; }
+.dialog-speaker { font-size:11px; font-weight:700; color:#fff; background:var(--green); padding:2px 8px; border-radius:8px; flex-shrink:0; margin-top:2px; }
+.dialog-speaker.b { background:var(--mint); }
+.dialog-text { flex:1; }
+.dialog-en { font-size:13px; line-height:1.5; }
+.dialog-zh { font-size:11px; color:var(--text-light); margin-top:2px; }
+.dialog-speak-btn { font-size:16px; cursor:pointer; flex-shrink:0; margin-top:2px; }
 .vocab-short-card {
   background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px;
   border:1px solid var(--border); box-shadow:var(--shadow);
@@ -715,7 +741,7 @@ textarea.input { resize:vertical; min-height:70px; }
 const STORAGE_KEY='creator_workspace_v3';
 function loadData(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):getDefaultData()}catch(e){return getDefaultData()}}
 function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
-function getDefaultData(){return{plans:[{id:1,text:'完成今日文章初稿',done:false},{id:2,text:'学习今日英语短文',done:true},{id:3,text:'了解今日热梗趋势',done:false}],planIdCounter:4,checkins:{},currentBookIndex:0,engLevel:'intermediate',engSubTab:'articles',readerMode:'both',playSpeed:1.0,playSentence:0,playPlaying:false,vocabLearned:[]}}
+function getDefaultData(){return{plans:[{id:1,text:'完成今日文章初稿',done:false},{id:2,text:'学习今日英语短文',done:true},{id:3,text:'了解今日热梗趋势',done:false}],planIdCounter:4,checkins:{},currentBookIndex:0,engLevel:'beginner',engSubTab:'roadmap',engRoadmap:[false,false,false,false,false,false,false,false],readerMode:'both',playSpeed:1.0,playSentence:0,playPlaying:false,vocabLearned:[]}}
 let appData=loadData();
 
 // ========== 导航 ==========
@@ -1106,16 +1132,87 @@ let currentArticle=null;
 let readerMode='both';
 
 function renderEnglish(){
-  const subTab=appData.engSubTab||'articles';
-  let html=`<div class="card"><div class="card-header"><span class="card-title">🌍 英语学习</span><span style="font-size:12px;color:var(--text-light)">每天30分钟盲听练习</span></div>
-    <div class="eng-level-tabs">
+  const subTab=appData.engSubTab||'roadmap';
+  let html=`<div class="card"><div class="card-header"><span class="card-title">🌍 英语学习</span><span style="font-size:12px;color:var(--text-light)">从零开始 · 每天进步一点点</span></div>
+    <div class="eng-level-tabs" style="flex-wrap:wrap">
+      <button class="eng-tab${subTab==='roadmap'?' active':''}" onclick="switchEngSubTab('roadmap')">🏠 学习路径</button>
+      <button class="eng-tab${subTab==='alphabet'?' active':''}" onclick="switchEngSubTab('alphabet')">🔤 字母发音</button>
+      <button class="eng-tab${subTab==='dialog'?' active':''}" onclick="switchEngSubTab('dialog')">💬 日常对话</button>
       <button class="eng-tab${subTab==='articles'?' active':''}" onclick="switchEngSubTab('articles')">📰 文章阅读</button>
       <button class="eng-tab${subTab==='vocab'?' active':''}" onclick="switchEngSubTab('vocab')">📝 背单词</button>
       <button class="eng-tab${subTab==='passages'?' active':''}" onclick="switchEngSubTab('passages')">📖 小短文</button>
     </div>
   </div>`;
 
-  if(subTab==='articles'){
+  if(subTab==='roadmap'){
+    const steps=appData.engRoadmap||[false,false,false,false,false,false,false,false];
+    html+=`<div class="roadmap-tip">💡 <b>零基础学习建议：</b>语言学习贵在坚持。建议每天花 20-30 分钟，按下面的路径一步一步来，不要跳步。完成了就点"标记完成"，系统会记住你的进度。</div>`;
+    const roadmap=[
+      {title:'第1步：认识26个字母',desc:'学会 26 个字母的大小写和读音，这是英语的根基。点击下方按钮去练习，每个字母点一下听发音，跟读 3 遍。',action:'alphabet',btn:'🔤 去练字母'},
+      {title:'第2步：学会基础音标',desc:'了解元音和辅音的发音规则，帮助你看到单词就能读出来。可以在字母练习中留意音标。',action:'alphabet',btn:'🔤 复习音标'},
+      {title:'第3步：积累高频单词',desc:'从最常用的 100 个单词开始，比如 I、you、he、she、the、a、is、are。每天背 5-10 个，反复复习。',action:'vocab',btn:'📝 去背单词'},
+      {title:'第4步：学习日常问候',desc:'掌握打招呼、自我介绍、感谢、道歉等最基本的对话。先听再跟读，直到能脱口而出。',action:'dialog',btn:'💬 去练对话'},
+      {title:'第5步：掌握基础语法',desc:'了解主谓宾结构、be动词用法、一般现在时。语法是骨架，让你说得对、写得通。',action:'passages',btn:'📖 看小短文'},
+      {title:'第6步：读简单短文',desc:'从 50-100 词的小短文开始，培养语感。先盲听一遍，再对照译文读，最后自己朗读。',action:'passages',btn:'📖 去读短文'},
+      {title:'第7步：听文章练耳朵',desc:'尝试听初级文章，训练抓关键词的能力。听不懂没关系，多听几遍，慢慢就懂了。',action:'articles',btn:'📰 去听文章'},
+      {title:'第8步：开口说出来',desc:'学过的对话和短文，试着不看文字自己说出来。录音对比，纠正发音。坚持每天开口 5 分钟。',action:'dialog',btn:'💬 复习对话'},
+    ];
+    roadmap.forEach((s,i)=>{
+      const done=steps[i];
+      html+=`<div class="roadmap-step${done?' done':''}"><div class="roadmap-step-num">${i+1}</div><div class="roadmap-step-title">${done?'✅ ':''}${s.title}</div><div class="roadmap-step-desc">${s.desc}</div><div class="roadmap-step-actions"><button class="btn btn-sm ${done?'btn-outline':'btn-green'}" onclick="toggleRoadmap(${i})">${done?'↩️ 取消完成':'✓ 标记完成'}</button><button class="btn btn-sm btn-outline" onclick="switchEngSubTab('${s.action}')">${s.btn}</button></div></div>`;
+    });
+    const doneCount=steps.filter(s=>s).length;
+    const pct=Math.round(doneCount/roadmap.length*100);
+    html+=`<div class="card" style="text-align:center;margin-top:8px"><div style="font-size:13px;color:var(--text-mid)">学习进度</div><div style="font-size:24px;font-weight:800;color:var(--green)">${doneCount}/${roadmap.length}</div><div class="plan-progress" style="max-width:200px;margin:8px auto 0"><div class="plan-progress-bar" style="width:${pct}%"></div></div></div>`;
+  }else if(subTab==='alphabet'){
+    const letters=[
+      {l:'A',p:'/eɪ/'},{l:'B',p:'/biː/'},{l:'C',p:'/siː/'},{l:'D',p:'/diː/'},{l:'E',p:'/iː/'},{l:'F',p:'/ef/'},{l:'G',p:'/dʒiː/'},{l:'H',p:'/eɪtʃ/'},{l:'I',p:'/aɪ/'},{l:'J',p:'/dʒeɪ/'},{l:'K',p:'/keɪ/'},{l:'L',p:'/el/'},{l:'M',p:'/em/'},{l:'N',p:'/en/'},{l:'O',p:'/oʊ/'},{l:'P',p:'/piː/'},{l:'Q',p:'/kjuː/'},{l:'R',p:'/ɑːr/'},{l:'S',p:'/es/'},{l:'T',p:'/tiː/'},{l:'U',p:'/juː/'},{l:'V',p:'/viː/'},{l:'W',p:'/ˈdʌbəljuː/'},{l:'X',p:'/eks/'},{l:'Y',p:'/waɪ/'},{l:'Z',p:'/ziː/'}
+    ];
+    html+=`<div class="card"><p style="font-size:12px;color:var(--text-light);line-height:1.6">💡 点击任意字母听发音。建议每天认 5 个，跟读 3 遍，记住大小写。</p></div>`;
+    html+=`<div class="alpha-grid">${letters.map(x=>`<div class="alpha-card" onclick="speak('${x.l}')"><div class="alpha-letter">${x.l}</div><div class="alpha-phonetic">${x.p}</div><div class="alpha-speak">🔊</div></div>`).join('')}</div>`;
+    html+=`<div class="card" style="margin-top:12px"><div class="card-header"><span class="card-title">🎵 字母歌</span></div><p style="font-size:13px;color:var(--text-mid);line-height:1.7">A-B-C-D-E-F-G<br>H-I-J-K-L-M-N<br>O-P-Q, R-S-T<br>U-V-W, X-Y-Z<br>Now I know my ABCs,<br>next time won't you sing with me?</p><button class="btn btn-green btn-block" style="margin-top:8px" onclick="speakAlphabet()">🔊 朗读全部字母</button></div>`;
+  }else if(subTab==='dialog'){
+    const scenes=[
+      {title:'👋 打招呼',lines:[
+        {who:'a',en:'Hello! How are you?',zh:'你好！你好吗？'},
+        {who:'b',en:'Hi! I\'m fine, thank you. And you?',zh:'嗨！我很好，谢谢。你呢？'},
+        {who:'a',en:'I\'m good, thanks. Nice to meet you!',zh:'我也很好，谢谢。很高兴认识你！'},
+        {who:'b',en:'Nice to meet you too!',zh:'我也很高兴认识你！'},
+      ]},
+      {title:'🛒 购物',lines:[
+        {who:'a',en:'Hello, can I help you?',zh:'你好，需要帮忙吗？'},
+        {who:'b',en:'Yes, how much is this?',zh:'是的，这个多少钱？'},
+        {who:'a',en:'It\'s 25 yuan.',zh:'25 元。'},
+        {who:'b',en:'OK, I\'ll take it.',zh:'好的，我买了。'},
+      ]},
+      {title:'🍔 点餐',lines:[
+        {who:'a',en:'What would you like to eat?',zh:'你想吃什么？'},
+        {who:'b',en:'I\'d like a hamburger, please.',zh:'请给我一个汉堡。'},
+        {who:'a',en:'Anything to drink?',zh:'要喝点什么吗？'},
+        {who:'b',en:'A cup of coffee, please.',zh:'请来一杯咖啡。'},
+      ]},
+      {title:'🚗 问路',lines:[
+        {who:'a',en:'Excuse me, where is the hospital?',zh:'打扰一下，医院在哪里？'},
+        {who:'b',en:'Go straight and turn left.',zh:'直走然后左转。'},
+        {who:'a',en:'Is it far from here?',zh:'离这里远吗？'},
+        {who:'b',en:'No, about 5 minutes walk.',zh:'不远，走路大约 5 分钟。'},
+      ]},
+      {title:'🙋 自我介绍',lines:[
+        {who:'a',en:'What\'s your name?',zh:'你叫什么名字？'},
+        {who:'b',en:'My name is Lily. I\'m from China.',zh:'我叫 Lily，我来自中国。'},
+        {who:'a',en:'What do you do?',zh:'你是做什么的？'},
+        {who:'b',en:'I\'m a student. I study English.',zh:'我是学生，我学英语。'},
+      ]},
+    ];
+    html+=`<div class="card"><p style="font-size:12px;color:var(--text-light);line-height:1.6">💡 每句点 🔊 听发音，先听 3 遍，再跟着读，直到不看中文也能说出来。</p></div>`;
+    scenes.forEach(sc=>{
+      html+=`<div class="dialog-scene"><div class="dialog-scene-title">${sc.title}</div>`;
+      sc.lines.forEach(ln=>{
+        html+=`<div class="dialog-line"><span class="dialog-speaker${ln.who==='b'?' b':''}">${ln.who==='a'?'A':'B'}</span><div class="dialog-text"><div class="dialog-en">${ln.en}</div><div class="dialog-zh">${ln.zh}</div></div><span class="dialog-speak-btn" onclick="speak('${ln.en.replace(/'/g,"\\'")}')">🔊</span></div>`;
+      });
+      html+=`</div>`;
+    });
+  }else if(subTab==='articles'){
     const level=appData.engLevel||'intermediate';
     const articles=engArticles[level]||engArticles.intermediate;
     html+=`<div class="card"><div style="display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;-webkit-overflow-scrolling:touch">
@@ -1159,6 +1256,35 @@ function renderEnglish(){
 
 function switchEngSubTab(tab){appData.engSubTab=tab;saveData(appData);renderPage('english');}
 function switchEngLevel(level){appData.engLevel=level;saveData(appData);renderPage('english');showToast(`已切换至${level==='beginner'?'初级':level==='intermediate'?'中级':'高级'}水平`);}
+function speak(text){
+  if(!('speechSynthesis' in window)){showToast('浏览器不支持朗读');return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=appData.playSpeed||1.0;
+  window.speechSynthesis.speak(u);
+}
+function speakAlphabet(){
+  if(!('speechSynthesis' in window)){showToast('浏览器不支持朗读');return;}
+  window.speechSynthesis.cancel();
+  const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  let i=0;
+  const next=()=>{
+    if(i>=L.length)return;
+    const u=new SpeechSynthesisUtterance(L[i]);
+    u.lang='en-US';u.rate=0.8;
+    u.onend=()=>{i++;setTimeout(next,200);};
+    window.speechSynthesis.speak(u);
+  };
+  next();
+}
+function toggleRoadmap(idx){
+  const steps=appData.engRoadmap||[false,false,false,false,false,false,false,false];
+  steps[idx]=!steps[idx];
+  appData.engRoadmap=steps;
+  saveData(appData);
+  renderPage('english');
+  showToast(steps[idx]?'已完成这一步 ✓':'已取消');
+}
 
 function showVocabDetail(idx){
   const level=appData.engLevel||'intermediate';
