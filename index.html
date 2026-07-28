@@ -20,7 +20,7 @@ var f=document.createElement('link');f.rel='icon';f.type='image/png';f.href=u;do
 </script>
 <script>
 (function(){
-  var v='2.4.2'; // 每次更新改这里
+  var v='2.4.3'; // 每次更新改这里
   var stored=localStorage.getItem('mei_app_version');
   var key='mei_reload_'+v;
   // 版本变化时强制刷新一次:带时间戳参数让缓存失效
@@ -324,6 +324,7 @@ textarea.input { resize:vertical; min-height:70px; }
 .vocab-speak:active { opacity:1; transform:scale(1.2); }
 .vocab-phonetic { font-size:11px; color:var(--text-light); margin-top:2px; }
 .vocab-meaning { font-size:12px; color:var(--text-light); margin-top:4px; }
+.vocab-example { font-size:11px; color:var(--mint); margin-top:6px; padding-top:6px; border-top:1px dashed var(--border); line-height:1.5; font-style:italic; }
 /* 零基础学习路径 */
 .roadmap-step { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px; border:1px solid var(--border); border-left:4px solid var(--green); position:relative; }
 .roadmap-step.done { border-left-color:#aaa; opacity:.7; }
@@ -1238,8 +1239,8 @@ function renderEnglish(){
       <button class="eng-tab${level==='beginner'?' active':''}" onclick="switchEngLevel('beginner')">🌱 初级</button>
       <button class="eng-tab${level==='intermediate'?' active':''}" onclick="switchEngLevel('intermediate')">🌿 中级</button>
       <button class="eng-tab${level==='advanced'?' active':''}" onclick="switchEngLevel('advanced')">🌳 高级</button>
-    </div><p style="font-size:12px;color:var(--text-light)">💡 点击单词查看发音和例句，点击"开始练习"进入单词训练</p></div>`;
-    html+=`<div class="vocab-grid">${words.map((w,i)=>`<div class="vocab-card"><div class="vocab-word">${w.word}<span class="vocab-speak" onclick="showVocabDetail(${i});event.stopPropagation();">🔊</span></div><div class="vocab-phonetic">${w.phonetic}</div><div class="vocab-meaning">${w.meaning}</div></div>`).join('')}</div>`;
+    </div><p style="font-size:12px;color:var(--text-light)">💡 点击 🔊 听发音和例句，点击"开始练习"进入单词训练</p></div>`;
+    html+=`<div class="vocab-grid">${words.map((w,i)=>`<div class="vocab-card"><div class="vocab-word">${w.word}<span class="vocab-speak" onclick="showVocabDetail(${i});event.stopPropagation();">🔊</span></div><div class="vocab-phonetic">${w.phonetic}</div><div class="vocab-meaning">${w.meaning}</div><div class="vocab-example">💬 ${w.example}</div></div>`).join('')}</div>`;
     html+=`<button class="btn btn-green btn-block" style="margin-top:12px" onclick="startVocabPractice()">📝 开始单词练习</button>`;
   }else if(subTab==='passages'){
     const level=appData.engLevel||'intermediate';
